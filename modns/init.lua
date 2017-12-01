@@ -191,7 +191,6 @@ modns = {
 		handledeprecated(path, isdeprecated)
 	end,
 	get = mtrequire,
-	deepcopy = deepcopy,
 	mk_parent_ns = mk_parent_ns,
 	mk_parent_ns_noauto = mk_parent_ns_noauto,
 }
