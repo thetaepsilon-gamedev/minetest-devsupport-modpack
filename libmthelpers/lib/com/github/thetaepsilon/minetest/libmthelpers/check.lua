@@ -193,6 +193,16 @@ local explain_interface_faildata = function(faildata)
 end
 check.explain.interface = explain_interface_faildata
 
+-- for callers that just need a signature to match for it to work.
+check.mk_interface_check = function(signatures, prefix)
+	if not prefix then prefix = "" else prefix = prefix .. " " end
+	return function(target)
+		local ok, faildata = check_interface(target, signatures)
+		if not ok then error(prefix..explain_interface_faildata(faildata)) end
+		return target
+	end
+end
+
 
 
 return check
