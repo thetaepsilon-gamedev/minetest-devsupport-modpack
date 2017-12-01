@@ -29,4 +29,9 @@ datastructs.new.set = tsi.mk_unique
 
 
 
+-- other structures, see their respective files
+datastructs.guardedmap = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.guardedmap")
+
+
+
 return datastructs
