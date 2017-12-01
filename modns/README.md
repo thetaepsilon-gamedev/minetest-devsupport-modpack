@@ -20,6 +20,5 @@ you'll get a lua error() telling you so, so you don't have to worry about boiler
 * Faster detection of a mod component not existing -
 modns.get() will throw an error() if the component does not exist instead of returning nil,
 so you'll immediately know what's happened if you made a typo in the component name or forgot to update depends.txt.
-optdepends can be safely probed with modns.check().
 
 API doc Coming Soon.
