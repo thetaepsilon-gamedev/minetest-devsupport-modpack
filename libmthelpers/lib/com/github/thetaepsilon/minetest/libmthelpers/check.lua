@@ -1,5 +1,6 @@
 local check = {}
 check.selftest = {}
+check.explain = {}
 
 
 
@@ -172,6 +173,25 @@ local check_interface = function(target, signatures)
 	return success, faildata
 end
 check.interface = check_interface
+-- failure data formatter to give a reasonable error description.
+-- I'm not going to bother translating this as it's not intended for general UI.
+local formattype = function(expected, actual) return "expected "..expected..", got "..actual end
+local utype = " had unexpected type: "
+local explain_interface_faildata = function(faildata)
+	local e = faildata.reason
+	local t = faildata.extra
+	local k = faildata.badkey
+	local msg = "???"
+	if e == "targettype" then
+		msg = "interface object"..utype..formattype("table or userdata", t)
+	elseif e == "missingkey" then
+		msg = "interface was missing member function "..k
+	elseif e == "keytype" then
+		msg = "interface member "..k..utype..formattype("function", t)
+	end
+	return msg
+end
+check.explain.interface = explain_interface_faildata
 
 
 
