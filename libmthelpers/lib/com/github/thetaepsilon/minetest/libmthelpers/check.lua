@@ -130,4 +130,49 @@ end
 
 
 
+-- check a table (or userdata)'s interface.
+-- takes a target object and a "signature table".
+-- for each string label found in the signature table,
+-- check that the target object's corresponding key is a function.
+-- stops and returns failure at the first non-match found,
+-- as well as "failure data":
+--[[
+faildata = {
+	reason = string,	-- one of "targettype", "missingkey" or "keytype"
+	badkey = keyname,	-- set to the signature key that failed or is missing if relevant.
+	extra = extradata,	-- see below:
+			-- for "targettype", set to the unexpected type of the target object.
+			-- for "keytype", set to the unexpected key type.
+			-- for any other reason, not set.
+}
+]]
+local check_interface = function(target, signatures)
+	local t = type(target)
+	if not (t == "table" or t == "userdata") then
+		return false, { reason="targettype", extra=t }
+	end
+
+	local success = true
+	local faildata
+	for _, key in ipairs(signatures) do
+		local v = target[key]
+		if v == nil then
+			success = false
+			faildata = { reason="missingkey", badkey=key }
+			break
+		else
+			t = type(v)
+			if t ~= "function" then
+				success = false
+				faildata = { reason="keytype", badkey=key, extra=t}
+				break
+			end
+		end
+	end
+	return success, faildata
+end
+check.interface = check_interface
+
+
+
 return check
