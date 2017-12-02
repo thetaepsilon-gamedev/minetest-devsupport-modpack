@@ -145,12 +145,14 @@ faildata = {
 			-- for "targettype", set to the unexpected type of the target object.
 			-- for "keytype", set to the unexpected key type.
 			-- for any other reason, not set.
+	expected = "expectedtype",
+			-- for any error returning a bad type in extradata, this is the expected type.
 }
 ]]
 local check_interface = function(target, signatures)
 	local t = type(target)
 	if not (t == "table" or t == "userdata") then
-		return false, { reason="targettype", extra=t }
+		return false, { reason="targettype", extra=t, expected="table or userdata" }
 	end
 
 	local success = true
@@ -165,7 +167,7 @@ local check_interface = function(target, signatures)
 			t = type(v)
 			if t ~= "function" then
 				success = false
-				faildata = { reason="keytype", badkey=key, extra=t}
+				faildata = { reason="keytype", badkey=key, extra=t, expected="function"}
 				break
 			end
 		end
@@ -181,13 +183,14 @@ local explain_interface_faildata = function(faildata)
 	local e = faildata.reason
 	local t = faildata.extra
 	local k = faildata.badkey
+	local x = faildata.expected
 	local msg = "???"
 	if e == "targettype" then
-		msg = "interface object"..utype..formattype("table or userdata", t)
+		msg = "interface object"..utype..formattype(x, t)
 	elseif e == "missingkey" then
 		msg = "interface was missing member function "..k
 	elseif e == "keytype" then
-		msg = "interface member "..k..utype..formattype("function", t)
+		msg = "interface member "..k..utype..formattype(x, t)
 	end
 	return msg
 end
@@ -200,6 +203,58 @@ check.mk_interface_check = function(signatures, prefix)
 		local ok, faildata = check_interface(target, signatures)
 		if not ok then error(prefix..explain_interface_faildata(faildata)) end
 		return target
+	end
+end
+
+
+
+-- variant of check_interface that stubs out functions or uses defaults from a provided table.
+-- default stubbed functions do nothing and return no values.
+-- this can only work for table targets; userdata cannot be written.
+-- returns faildata compatible with explain_interface_faildata above.
+-- first return value is the result table if successful, nil otherwise.
+-- this function does NOT modify target.
+local default = function() return function(self, ...) end end
+local check_interface_or_missing = function(src, signatures, defaults)
+	if not defaults then defaults = {} end
+	local result = {}
+
+	local t = type(src)
+	local x = "table"
+	if not (t == "nil" or t == x) then
+		return nil, { reason="targettype", extra=t, expected=x }
+	else
+		-- allow passing a nil table to mean "default everything"
+		src = src or {}
+	end
+
+	x = "function"
+	local faildata
+	for _, key in ipairs(signatures) do
+		local v = src[key]
+		if v == nil then
+			result[key] = defaults[key] or default()
+		else
+			t = type(v)
+			if t ~= x then
+				result = nil
+				faildata = { reason="keytype", badkey=key, extra=t, expected=x}
+				break
+			else
+				result[key] = v
+			end
+		end
+	end
+	return result, faildata
+end
+check.interface_or_missing = check_interface_or_missing
+
+check.mk_interface_defaulter = function(prefix, signatures, defaults)
+	if not prefix then prefix = "" else prefix = prefix .. " " end
+	return function(src)
+		local result, faildata = check_interface_or_missing(src, signatures, defaults)
+		if not result then error(prefix..explain_interface_faildata(faildata)) end
+		return result
 	end
 end
 
