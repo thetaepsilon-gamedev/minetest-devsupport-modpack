@@ -62,3 +62,13 @@ local m_loader = dofile(_modpath.."loader.lua")
 local loader = m_loader.new(loader_impl, modcache, opts)
 
 mtrequire = function(p) return loader:get(p) end
+-- stripped down version of the modns interface;
+-- explicit registration and compat aliases are not supported.
+local ns = (dofile(_modpath.."nsauto.lua"))(loader)
+modns = {
+	get = mtrequire,
+	mk_parent_ns = ns.ns,
+	mk_parent_ns_noauto = ns.ns_noauto,
+}
+
+_modpath = nil
