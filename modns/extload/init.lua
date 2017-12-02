@@ -33,6 +33,9 @@ local mp = function(modname) return modmap[modname] end
 
 local m_loaddefs = dofile(_modpath.."loader-defaults.lua")
 local d = m_loaddefs.mk_debugger(print, "[loader] ")
+-- quieten the debugger so as to not flood stdout
+local filterlist = dofile(_modpath.."log-filter-list.lua")
+if not os.getenv("MODNS_VERBOSE") then d = m_loaddefs.mk_debug_filter(d, filterlist) end
 
 local m_reservations = dofile(_modpath.."reservations.lua")
 -- reservation manager ioimpl
