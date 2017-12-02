@@ -227,11 +227,14 @@ local check_interface_or_missing = function(src, signatures, defaults)
 		-- allow passing a nil table to mean "default everything"
 		src = src or {}
 	end
+	for k, v in pairs(src) do
+		result[k] = v
+	end
 
 	x = "function"
 	local faildata
 	for _, key in ipairs(signatures) do
-		local v = src[key]
+		local v = result[key]
 		if v == nil then
 			result[key] = defaults[key] or default()
 		else
@@ -240,8 +243,6 @@ local check_interface_or_missing = function(src, signatures, defaults)
 				result = nil
 				faildata = { reason="keytype", badkey=key, extra=t, expected=x}
 				break
-			else
-				result[key] = v
 			end
 		end
 	end
