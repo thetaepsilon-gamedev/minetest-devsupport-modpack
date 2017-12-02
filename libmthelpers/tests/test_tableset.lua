@@ -117,7 +117,7 @@ end
 
 
 
-local tableset = dofile("tableset.lua")
+local tableset = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.tableset")
 
 print(test(tableset.new))
 print(test(tableset.mk_unique))

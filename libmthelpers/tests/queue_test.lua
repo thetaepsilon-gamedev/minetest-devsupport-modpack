@@ -1,3 +1,4 @@
+#!/usr/bin/env lua5.1
 local qi = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.queue")
 
 local queue = qi.new()
