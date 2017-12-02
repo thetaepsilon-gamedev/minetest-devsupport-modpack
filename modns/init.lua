@@ -94,21 +94,16 @@ local register = function(path, component, isdeprecated, invoker)
 	handledeprecated(path, isdeprecated)
 end
 
--- "require" equivalent for MT mods, performs lookup and retreival.
--- lint note: intentional global assigmnent
+
+
 function mtrequire(path)
 	checkpath(path)
 	local invoker = tostring(minetest.get_current_modname())
 	local result
 	local compat_alias = compat[path]
 
-	-- woo, nested functions!
-	local logaccess = function(msg)
-		logaction(log_trace, "component "..path.." requested by "..invoker..": "..msg)
-	end
-
 	if deprecated[path] then
-		logaction(log_warning, "component "..path.." has been marked deprecated!")
+		debugger({n="modns.loader.access_deprecated" args={invoker=invoker, path=path}})
 	end
 
 	if compat_alias then
@@ -119,7 +114,6 @@ function mtrequire(path)
 	if obj then
 		result = deepcopy(obj)
 	else
-		logaction(log_error, "mod "..invoker.." tried to retrieve non-existant component "..path)
 		error("component "..path.." does not exist")
 	end
 
