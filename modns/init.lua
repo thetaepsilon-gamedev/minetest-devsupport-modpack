@@ -103,7 +103,7 @@ function mtrequire(path)
 	local compat_alias = compat[path]
 
 	if deprecated[path] then
-		debugger({n="modns.loader.access_deprecated" args={invoker=invoker, path=path}})
+		debugger({n="modns.loader.access_deprecated", args={invoker=invoker, path=path}})
 	end
 
 	if compat_alias then
@@ -121,29 +121,9 @@ function mtrequire(path)
 end
 
 
-
--- helpers to create a parent namespace which is simply a table housing sub-namespaces.
-local dname = "mk_parent_ns_noauto() "
-local mk_parent_ns_noauto = function(list, base, sep)
-	local result = {}
-	for _, sub in ipairs(list) do
-		local subpath = base..sep..sub
-		result[sub] = mtrequire(subpath)
-	end
-	return result
-end
-
-local dname = "mk_parent_ns() "
-local mk_parent_ns = function(list)
-	local inflight, ptype = loader:get_current_inflight()
-	if not inflight then error(dname.."must be invoked via dynamic loading of another file") end
-	local sep = ptype.pathsep
-	if not sep then error(dname.."auto path deduction failure: path type "..ptype.label.." doesn't support separator concatenation") end
-	return mk_parent_ns_noauto(list, inflight, sep)
-end
-
-
-
+_modpath = modpath
+local nsauto = (dofile(modpath.."nsauto.lua"))(loader)
+_modpath = nil
 
 modns = {
 	register = function(path, component, isdeprecated, opts)
@@ -185,8 +165,8 @@ modns = {
 		handledeprecated(path, isdeprecated)
 	end,
 	get = mtrequire,
-	mk_parent_ns = mk_parent_ns,
-	mk_parent_ns_noauto = mk_parent_ns_noauto,
+	mk_parent_ns = nsauto.ns,
+	mk_parent_ns_noauto = nsauto.ns_noauto,
 }
 
 minetest.log("info", "modns interface now exported")
