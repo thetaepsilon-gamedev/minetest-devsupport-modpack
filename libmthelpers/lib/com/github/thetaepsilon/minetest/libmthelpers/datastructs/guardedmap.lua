@@ -66,12 +66,22 @@ local get = function(self, k) return self.entries[k] end
 
 local size = function(self) return self.count end
 
+-- get a single arbitary entry from the table.
+-- intended for use cases where other operations clear entries from this map,
+-- until none remain.
+-- returns key and value of the selected entry.
+local getsingle = function(self)
+	local k, v = next(self.entries)
+	return k, v
+end
+
 local construct = function(callbacks)
 	local self = {
 		add = add,
 		remove = remove,
 		get = get,
 		size = size,
+		next = getsingle,
 	}
 	self.entries = {}
 	self.count = 0
