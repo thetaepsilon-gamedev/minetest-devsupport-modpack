@@ -45,6 +45,7 @@ local add = function(self, k, v)
 		return false, self.handler:on_collision(e, k, oldv, v)
 	else
 		e[k] = v
+		self.count = self.count + 1
 		return true
 	end
 end
@@ -56,19 +57,24 @@ local remove = function(self, k)
 		return nil, self.handler:on_remove_missing(e, k)
 	else
 		e[k] = nil
+		self.count = self.count - 1
 		return oldv
 	end
 end
 
 local get = function(self, k) return self.entries[k] end
 
+local size = function(self) return self.count end
+
 local construct = function(callbacks)
 	local self = {
 		add = add,
 		remove = remove,
 		get = get,
+		size = size,
 	}
 	self.entries = {}
+	self.count = 0
 	self.handler = checki(callbacks)
 
 	return self
