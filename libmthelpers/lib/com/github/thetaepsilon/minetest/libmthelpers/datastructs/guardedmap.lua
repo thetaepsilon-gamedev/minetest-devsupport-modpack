@@ -75,6 +75,13 @@ local getsingle = function(self)
 	return k, v
 end
 
+-- get a copy of the internal entries table.
+local copyentries = function(self)
+	local ret = {}
+	for k, v in pairs(self.entries) do ret[k] = v end
+	return ret
+end
+
 local construct = function(callbacks)
 	local self = {
 		add = add,
@@ -82,6 +89,7 @@ local construct = function(callbacks)
 		get = get,
 		size = size,
 		next = getsingle,
+		copyentries = copyentries,
 	}
 	self.entries = {}
 	self.count = 0
