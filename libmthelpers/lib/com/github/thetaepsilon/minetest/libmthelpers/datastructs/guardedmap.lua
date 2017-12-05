@@ -99,5 +99,21 @@ local construct = function(callbacks)
 end
 i.new = construct
 
+-- construct the map from a provided table, copying it's keys.
+local copytable = function(callbacks, existing)
+	local self = construct(callbacks)
+	local count = 0
+	-- the map is new, so don't bother running callback checks.
+	local e = self.entries
+	for k, v in pairs(existing) do
+		e[k] = v
+		count = count + 1
+	end
+	self.count = count
+	return self
+end
+i.from_table = copytable
+
+
 
 return i
