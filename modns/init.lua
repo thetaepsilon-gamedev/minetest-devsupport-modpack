@@ -137,18 +137,12 @@ modns = {
 
 		local owner, prefixlength, parsed = checkpath(path)
 		if checkexists(path) then error("duplicate component registration for "..path) end
-		local comptype = type(component)
 		local invoker = tostring(minetest.get_current_modname())
 		if owner ~= nil and owner ~= invoker then
 			error("mod "..invoker.." tried to register "..path.." but that path is reserved by "..owner)
 		end
-		if comptype == "table" then
-			register(path, component, isdeprecated, invoker)
-			logaction(log_trace, "mod object registered for component "..path.." by mod "..invoker)
-		else
-			logaction(log_error, "mod "..invoker.." tried to register an unknown object of type "..comptype)
-			error("modns.register(): unrecognised object type "..comptype)
-		end
+		register(path, component, isdeprecated, invoker)
+		logaction(log_trace, "component "..path.." manually registered by mod "..invoker)
 		handledeprecated(path, isdeprecated)
 	end,
 	register_compat_alias = function(path, totarget, isdeprecated)
