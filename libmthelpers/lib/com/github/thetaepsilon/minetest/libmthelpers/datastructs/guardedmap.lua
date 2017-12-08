@@ -82,6 +82,8 @@ local copyentries = function(self)
 	return ret
 end
 
+local iterator = function(self) return pairs(self.entries) end
+
 local construct = function(callbacks)
 	local self = {
 		add = add,
@@ -90,6 +92,7 @@ local construct = function(callbacks)
 		size = size,
 		next = getsingle,
 		copyentries = copyentries,
+		iterator = iterator,
 	}
 	self.entries = {}
 	self.count = 0
