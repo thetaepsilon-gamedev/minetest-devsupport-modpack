@@ -42,4 +42,37 @@ end
 end
 coords.neighbour_offsets = diagonals
 
+
+
+-- minetest's rounding of coords to nodes goes something like the following
+-- (for each axis n in x, y, z):
+-- * -0.5 < n < 0.5 (non-inclusive) rounds to node 0
+-- * node t = (t-0.5) <= n < (t+0.5) for n > 0.5 and t > 0
+-- * node t = (t-0.5) < n <= (t+0.5) for n < -0.5 and t < 0
+-- this means that 0,0.5,0 is considered part of node 0,1,0,
+-- and that 0,-0.5,0 is considered part of node 0,-1,0.
+local positive = function(x) return (x > 0) end
+local center = function(x)
+	if positive(x) then
+		-- x=0.5, math.floor(0.5+0.5) = math.floor(1.0) = 1.0
+		return math.floor(x+0.5)
+	else
+		-- x=-0.5, math.ceil(-0.5 + -0.5) = math.ceil(-1.0) = -1.0
+		return math.ceil(x-0.5)
+	end
+end
+coords.round_axis_to_node = center
+
+local center_on_node = function(v)
+	local result = {}
+	result.x = center(v.x)
+	result.y = center(v.y)
+	result.z = center(v.z)
+	return result
+end
+coords.round_to_node = center_on_node
+
+
+
+
 return coords
