@@ -5,7 +5,6 @@ local components = {
 	"iterators",
 	"tableutils",
 	"coords",
-	"playerpos",	-- portable, though stoodnode expects the interface of an objectref.
 	"check",
 	"facedir",
 	"stats",
