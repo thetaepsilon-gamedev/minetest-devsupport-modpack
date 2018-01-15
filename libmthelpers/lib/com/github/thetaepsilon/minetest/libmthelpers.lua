@@ -9,6 +9,7 @@ local components = {
 	"facedir",
 	"stats",
 	"readonly",
+	"typechecking",
 	"datastructs",
 	"continuations",
 	"profiling",
