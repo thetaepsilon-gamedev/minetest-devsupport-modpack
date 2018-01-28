@@ -75,6 +75,14 @@ result.ok(v) and result.err(e)
 	respectively, construct a result object representing a success value,
 	or a result object representing a failure value.
 ]]
+local ok = function(v)
+	return {}
+end
+local err = function(e)
+	return {}
+end
+i.ok = ok
+i.err = err
 
 return i
 
