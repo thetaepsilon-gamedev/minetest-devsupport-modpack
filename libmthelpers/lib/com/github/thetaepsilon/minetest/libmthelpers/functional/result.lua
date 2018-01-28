@@ -32,9 +32,6 @@ API of a result object:
 	if this result represents success, returns the wrapped value;
 	else, throw an error with an optional message and caller string.
 
-* result:expectError(caller, msg)
-	inverse of the above; only really intended for testing.
-
 * result:fmap(converter, econverter)
 	"function map" operation
 	(note this differs slightly from fmap for Either in Haskell).
