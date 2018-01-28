@@ -58,6 +58,20 @@ where $s is the result of calling tostring on the wrapped value.
 Note that this tostring format is explicitly considered not a part of the API.
 ]]
 
+local i = {}
+
+--[[
+in order to allow for testing,
+the errors this module throws have to have some degree of machine readability.
+this is so they can be distiguished from errors caused by other bugs.
+thrown errors will utilise these prefixes.
+]]
+local errors = {
+	e_notok = "ERESULTNOTOK",
+	e_noterr = "ERESULTNOTERR",
+}
+i.error_throws = errors
+
 --[[
 module level constructors ("result" here means the module, not a result object):
 result.ok(v) and result.err(e)
@@ -65,4 +79,5 @@ result.ok(v) and result.err(e)
 	or a result object representing a failure value.
 ]]
 
+return i
 
