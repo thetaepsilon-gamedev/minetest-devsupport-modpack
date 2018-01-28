@@ -49,6 +49,21 @@ the verifier for the same type checks if this key exists and has the correct val
 --[[
 Generate the random key/value strings for simple types.
 Uses math.random to pick hexadecimal chars and concats them.
+
+In theory, we would want to pick a key which is protected by obscurity
+(in the abscence of a more secure language-level mechanism);
+say it's some random selection of words.
+
+In practice, obscurity almost always gets broken in practice;
+it seems that for the simple method,
+there is no 100% bulletproof way of hiding the key,
+and there is also always the remote chance of collision with a real key.
+Sometimes it just plain boils down to how stupid you expect clients to be.
+
+So, to keep it sane and simple,
+the table key generation below actually does use a predictable pattern,
+if only for the sake of debugging.
+Code which wants to use something more secure should use the strong variant.
 ]]
 local hex = "0123456789ABCDEF"
 local getrandhex = function()
@@ -67,13 +82,14 @@ end
 
 
 local r = function() return genhexstring(16) end
+local rk = function() return "__"..r().."_type" end
 local i = {}
 
 
 -- names below should be somewhat self explanatory...
 
 i.create_simple_type = function()
-	local k = r()
+	local k = rk()
 	local v = r()
 
 	local signer = function(object)
