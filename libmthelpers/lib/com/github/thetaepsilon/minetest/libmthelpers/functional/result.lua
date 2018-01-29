@@ -89,6 +89,23 @@ local error_unwrap = function(self, caller, message)
 	return error(emsg)
 end
 
+
+
+-- visitors for each sub-type.
+-- call the appropriate closure in either case.
+local mk_ok_visit = function(v)
+	return function(self, cv, ce)
+		return cv(v)
+	end
+end
+local mk_error_visit = function(e)
+	return function(self, cv, ce)
+		return ce(e)
+	end
+end
+
+
+
 --[[
 module level constructors ("result" here means the module, not a result object):
 result.ok(v) and result.err(e)
@@ -98,11 +115,13 @@ result.ok(v) and result.err(e)
 local ok = function(v)
 	return {
 		unwrap = delay(v),
+		visit = mk_ok_visit(v),
 	}
 end
 local err = function(e)
 	return {
 		unwrap = error_unwrap,
+		visit = mk_error_visit(e),
 	}
 end
 i.ok = ok
