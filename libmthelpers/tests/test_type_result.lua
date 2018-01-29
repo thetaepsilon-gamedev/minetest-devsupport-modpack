@@ -18,11 +18,14 @@ local expect_error = function(f, predicate, ...)
 	end
 end
 -- use the above to look for prefixes in the error string.
+-- however, somewhere between the throw and the catch,
+-- lua injects the source file which caused the error.
+-- therefore it's not always at the start of the string.
 local expect_error_prefix = function(f, prefix, ...)
 	local s = #prefix
 	local predicate = function(msg)
 		local start, last = msg:find(prefix, 1, true)
-		return (start == 1) and (last == s)
+		return (start and last) and (last - start == s-1)
 	end
 	return expect_error(f, predicate, ...)
 end
