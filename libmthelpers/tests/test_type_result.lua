@@ -47,6 +47,12 @@ expect_error_method(
 	m_result.error_throws.e_notok,
 	caller,
 	"unwrap exception should have been caught")
+-- repeat but with no caller/message combination;
+-- this should NOT cause some error due to them being nil.
+expect_error_method(
+	err,
+	"unwrap",
+	m_result.error_throws.e_notok)
 
 
 
