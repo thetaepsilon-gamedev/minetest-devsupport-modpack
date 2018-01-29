@@ -106,6 +106,24 @@ end
 
 
 
+-- fmap operations for each sub-type.
+-- again calls the appropriate closure,
+-- *then* wrapping the value back into an object.
+-- note the constructor definitions pass themselves to these functions.
+local mk_ok_fmap = function(v, cons)
+	return function(self, cv, ce)
+		return cons(cv(v))
+	end
+end
+local mk_err_fmap = function(e, cons)
+	return function(self, cv, ce)
+		-- return ourselves to represent "not modified" if ce is not set.
+		return ce and cons(ce(e)) or self
+	end
+end
+
+
+
 --[[
 module level constructors ("result" here means the module, not a result object):
 result.ok(v) and result.err(e)
@@ -116,12 +134,14 @@ local function ok(v)
 	return {
 		unwrap = delay(v),
 		visit = mk_ok_visit(v),
+		fmap = mk_ok_fmap(v, ok),
 	}
 end
 local function err(e)
 	return {
 		unwrap = error_unwrap,
 		visit = mk_error_visit(e),
+		fmap = mk_err_fmap(e, err),
 	}
 end
 i.ok = ok
