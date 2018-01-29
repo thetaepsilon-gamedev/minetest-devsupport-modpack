@@ -95,8 +95,8 @@ local bang = function()
 end
 
 local ok2 = ok:fmap(converter, bang)
-local r3 = ok2:visit(function(v)
-		assert(v[1] == v, "converted value should hold original value")
+local r3 = ok2:visit(function(v1)
+		assert(v1[1] == v, "converted value should hold original value")
 		return true
 	end, function(e)
 		error("error result not expected after fmap")
