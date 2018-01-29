@@ -55,6 +55,16 @@ where $s is the result of calling tostring on the wrapped value.
 Note that this tostring format is explicitly considered not a part of the API.
 ]]
 
+
+
+-- produce a function which returns a value at a later time.
+-- XXX: candidate-for-library function delay
+local delay = function(v)
+	return function(...)
+		return v
+	end
+end
+
 local i = {}
 
 --[[
@@ -76,7 +86,9 @@ result.ok(v) and result.err(e)
 	or a result object representing a failure value.
 ]]
 local ok = function(v)
-	return {}
+	return {
+		unwrap = delay(v),
+	}
 end
 local err = function(e)
 	return {}
