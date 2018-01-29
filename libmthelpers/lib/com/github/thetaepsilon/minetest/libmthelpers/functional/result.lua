@@ -122,6 +122,18 @@ local mk_err_fmap = function(e, cons)
 	end
 end
 
+-- create __tostring operators for the specified value.
+local mk_tostring = function(v, label, keylabel)
+	return function(...)
+		return "[Result: "..label.." "..keylabel.."=["..tostring(v).."] ]"
+	end
+end
+local attach_tostring = function(t, ...)
+	local f = mk_tostring(...)
+	local meta = { __tostring=f }
+	return setmetatable(t, meta)
+end
+
 
 
 --[[
@@ -131,18 +143,20 @@ result.ok(v) and result.err(e)
 	or a result object representing a failure value.
 ]]
 local function ok(v)
-	return {
+	local self = {
 		unwrap = delay(v),
 		visit = mk_ok_visit(v),
 		fmap = mk_ok_fmap(v, ok),
 	}
+	return attach_tostring(self, v, "Success", "v")
 end
 local function err(e)
-	return {
+	local self = {
 		unwrap = error_unwrap,
 		visit = mk_error_visit(e),
 		fmap = mk_err_fmap(e, err),
 	}
+	return attach_tostring(self, e, "Error", "e")
 end
 i.ok = ok
 i.err = err
