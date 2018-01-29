@@ -112,13 +112,13 @@ result.ok(v) and result.err(e)
 	respectively, construct a result object representing a success value,
 	or a result object representing a failure value.
 ]]
-local ok = function(v)
+local function ok(v)
 	return {
 		unwrap = delay(v),
 		visit = mk_ok_visit(v),
 	}
 end
-local err = function(e)
+local function err(e)
 	return {
 		unwrap = error_unwrap,
 		visit = mk_error_visit(e),
