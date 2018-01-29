@@ -79,6 +79,16 @@ local errors = {
 }
 i.error_throws = errors
 
+-- unwrap implementation for error result:
+-- throw an exception with message based on what the caller passes.
+local desc = "tried to unwrap an error result"
+local error_unwrap = function(self, caller, message)
+	caller = (caller and (" "..caller..": ") or " ")
+	message = (message and (": "..message) or "")
+	local emsg = errors.e_notok..caller..desc..message
+	return error(emsg)
+end
+
 --[[
 module level constructors ("result" here means the module, not a result object):
 result.ok(v) and result.err(e)
@@ -91,7 +101,9 @@ local ok = function(v)
 	}
 end
 local err = function(e)
-	return {}
+	return {
+		unwrap = error_unwrap,
+	}
 end
 i.ok = ok
 i.err = err
