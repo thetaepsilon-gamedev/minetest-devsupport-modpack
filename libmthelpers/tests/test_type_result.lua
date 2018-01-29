@@ -59,6 +59,25 @@ expect_error_method(
 
 
 
+local retval = "result returned from visitor"
+local r1 = ok:visit(function(v2)
+		assert(v2 == v, "object passed to visitor should be original value")
+		return retval
+	end, function(e)
+		error("result object should not have been an error")
+	end)
+assert(r1 == retval, "visitor should have returned expected string")
+
+local errval = "result returned from error visitor"
+local r2 = err:visit(function(v)
+		error("error object should not have called success visitor")
+	end, function(e1)
+		assert(e1 == e, "error object passed to visitor should be original error")
+		return errval
+	end)
+assert(r2 == errval, "visitor should have returned expected string")
+
+
 
 print("libmthelpers.functional.result tests passed")
 return true
