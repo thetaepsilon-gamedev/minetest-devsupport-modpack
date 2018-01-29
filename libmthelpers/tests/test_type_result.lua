@@ -13,7 +13,7 @@ local expect_error = function(f, predicate, ...)
 	local ok, err = pcall(f, ...)
 	
 	if ok then error(n.."error expected but function succeeded") end
-	if not predicate then
+	if not predicate(err) then
 		error(n.."error caught but did not match predicate")
 	end
 end
