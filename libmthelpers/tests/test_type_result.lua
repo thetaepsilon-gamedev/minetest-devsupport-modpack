@@ -79,6 +79,50 @@ assert(r2 == errval, "visitor should have returned expected string")
 
 
 
+-- fmap transformations
+local d = "No such file or directory"
+local descriptions = {
+	[e] = d,
+}
+local converter = function(v)
+	return { v }
+end
+local econverter = function(e)
+	return descriptions[e]
+end
+local bang = function()
+	return error("converter or econverter called where other was expected")
+end
+
+local ok2 = ok:fmap(converter, bang)
+local r3 = ok2:visit(function(v)
+		assert(v[1] == v, "converted value should hold original value")
+		return true
+	end, function(e)
+		error("error result not expected after fmap")
+	end)
+assert(r3, "successful visit should have returned true")
+
+local err2 = err:fmap(bang, econverter)
+local cv = function(v)
+	error("success result not expected after fmap of error")
+end
+local r4 = err2:visit(cv, function(e)
+		assert(e == d, "converted error should be long form of original")
+		return true
+	end)
+assert(r4, "visit of error result should have returned true")
+
+-- nil econverter should pass through the error.
+local err3 = err:fmap(bang, nil)
+local r5 = err3:visit(cv, function(e1)
+		assert(e == e1, "nil econverter fmap should have preserved error object")
+		return true
+	end)
+assert(r5, "visit of error result should have returned true")
+
+
+
 print("libmthelpers.functional.result tests passed")
 return true
 
