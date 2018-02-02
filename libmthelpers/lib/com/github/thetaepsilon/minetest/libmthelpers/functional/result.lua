@@ -161,5 +161,63 @@ end
 i.ok = ok
 i.err = err
 
+
+
+-- error result construction helpers.
+-- firstly, a __tostring operation which calls e:explain().
+-- useful for structured error messages.
+local h = {}
+i.helpers = h
+local explain = function(e)
+	return e:explain()
+end
+h.explain_tostring = explain
+
+local readonly = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.readonly")
+local default_explain_meta = {
+	__metatable = false,
+	__tostring = explain,
+}
+local mk_default_explain = function(e)
+	return setmetatable(e, readonly.shallowcopy(default_explain_meta))
+end
+i.mk_default_explain = mk_default_explain
+
+-- then, a helper which constructs a structured error object from a *thrown* error.
+-- note, this is not an error result but rather an object which would go in one;
+-- it contains an explain() method analogous to the message method on Java exceptions.
+local mk_exception_error = function(thrown)
+	return mk_default_explain({
+
+		data = thrown,
+		explain = function(self)
+			return "Unexpected thrown exception: "..tostring(self.data)
+		end,
+	})
+end
+i.mk_exception_error = mk_exception_error
+
+
+
+-- and finally a helper wrapper around pcall to produce error resuts.
+-- however, instead of returning a result object unconditionally,
+-- this is intended to be used as an early return within imperative flow control.
+-- it is analogous to pcall, except when an error is thrown,
+-- the second argument is this error wrapped up.
+local capture = function(status, ...)
+	if not status then
+		local e = ...
+		return false, err(mk_exception_error(e))
+	else
+		return true, ...
+	end
+end
+local rpcall = function(f, ...)
+	return capture(pcall(f, ...))
+end
+i.rpcall = rpcall
+
+
+
 return i
 
