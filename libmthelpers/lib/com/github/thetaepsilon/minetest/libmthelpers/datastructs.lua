@@ -30,7 +30,9 @@ datastructs.new.set = tsi.mk_unique
 
 
 -- other structures, see their respective files
-datastructs.guardedmap = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.guardedmap")
+local base = "com.github.thetaepsilon.minetest.libmthelpers.datastructs."
+datastructs.guardedmap = mtrequire(base.."guardedmap")
+datastructs.matrix = mtrequire(base.."matrix")
 
 
 
