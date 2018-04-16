@@ -73,4 +73,75 @@ facedir.to_reverse_dir = reverse_vec
 
 
 
+-- rotate a vector based on node param2 data,
+-- where the base vector is sat at param2 = 0 (facing up, zero rotation)
+local matrix =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.matrix")
+local m = function(vs) return matrix.new(3, 3, vs) end
+local identity = m({
+	1,  0,  0,
+	0,  1,  0,
+	0,  0,  1,
+})
+local rotation_m = {
+	[0] = identity,
+	m({
+		0,  0,  1,
+		0,  1,  0,
+		-1, 0,  0,
+	}),	-- 90 degrees CW
+	m({
+		-1, 0,  0,
+		0,  1,  0,
+		0,  0, -1,
+	}),	-- 180 degrees
+	m({
+		0,  0, -1,
+		0,  1,  0,
+		1,  0,  0,
+	})	-- 90 degrees CCW
+}
+local axis_m = {
+	[0] = identity,
+	m({
+		1,  0,  0,
+		0,  0, -1,
+		0,  1,  0,
+	}),
+	m({
+		1,  0,  0,
+		0,  0,  1,
+		0, -1,  0,
+	}),
+	m({
+		0,  1,  0,
+		-1, 0,  0,
+		0,  0,  1,
+	}),
+	m({
+		0,  -1, 0,
+		1,  0,  0,
+		0,  0,  1,
+	}),
+	m({
+		-1, 0,  0,
+		0, -1,  0,
+		0,  0,  1,
+	}),
+}
+local matrices = {}
+for axis = 0, 5, 1 do
+	for rotation = 0, 3, 1 do
+		matrices[(axis * 4) + rotation] =
+			axis_m[axis]:multiply_m(rotation_m[rotation])
+	end
+end
+local get_rotation_matrix = function(param2)
+	param2check("get_rotation_matrix()", param2)
+	return matrices[param2]
+end
+facedir.get_rotation_matrix = get_rotation_matrix
+
+
+
 return facedir
