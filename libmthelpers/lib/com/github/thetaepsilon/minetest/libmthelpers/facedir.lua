@@ -138,7 +138,7 @@ for axis = 0, 5, 1 do
 end
 local get_rotation_matrix = function(param2)
 	param2check("get_rotation_matrix()", param2)
-	return matrices[param2]
+	return matrices[param2]:clone()
 end
 facedir.get_rotation_matrix = get_rotation_matrix
 

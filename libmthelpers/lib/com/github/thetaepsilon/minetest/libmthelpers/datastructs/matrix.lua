@@ -112,6 +112,15 @@ local function operator_eq(self, other)
 	return matches and array_matches(self, other, ha * wa)
 end
 
+clone = function(self)
+	local y, x = self:get_size()
+	local c = mk_uninit(y, x)
+	for i = 1, y*x, 1 do
+		c[i] = self[i]
+	end
+	return assert_initialised(c)
+end
+
 
 
 local add_methods = function(matrix, x, y)
@@ -123,6 +132,8 @@ local add_methods = function(matrix, x, y)
 	matrix.multiply_m = matrix_multiply
 	-- equals: check one matrix equals another
 	matrix.equals = operator_eq
+	-- clone operator
+	matrix.clone = clone
 end
 
 local msg_dim = " dimension for matrix should be positive"
