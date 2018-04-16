@@ -167,5 +167,28 @@ i.primitive_print = function(matrix, printer)
 	end
 end
 
+-- conversions to and from minetest XYZ vector tables.
+-- the matrix equivalent of an XYZ vector is a 3x1 "column matrix".
+i.to_xyz = function(matrix)
+	local height, width = matrix:get_size()
+	assert((height == 3) and (width == 1),
+		"only 3x1 column matrices can be converted to a vector")
+	return { x=matrix[1], y=matrix[2], z=matrix[3] }
+end
+local check_component = function(vec, k)
+	local v = vec[k]
+	local t = type(v)
+	assert(t == "number",
+		"xyz_to_matrix(): " .. k ..
+		" component in vector table expected to be a number, got " .. t)
+	return v
+end
+i.from_xyz = function(vector)
+	local x = check_component(vector, "x")
+	local y = check_component(vector, "y")
+	local z = check_component(vector, "z")
+	return mk(3, 1, {x, y, z})
+end
+
 return i
 
