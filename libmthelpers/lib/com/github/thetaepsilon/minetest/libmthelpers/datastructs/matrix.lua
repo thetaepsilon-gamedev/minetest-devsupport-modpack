@@ -97,7 +97,20 @@ local matrix_multiply = function(self, other)
 	return assert_initialised(result)
 end
 
-
+-- boolean equality operator:
+-- checks matrix is the same size as another, and same values inside
+local array_matches = function(a, b, length)
+	for i = 1, length, 1 do
+		if a[i] ~= b[i] then return false end
+	end
+	return true
+end
+local function operator_eq(self, other)
+	local ha, wa = self:get_size()
+	local hb, wb = other:get_size()
+	local matches = (ha == hb) and (wa == wb)
+	return matches and array_matches(self, other, ha * wa)
+end
 
 
 
@@ -108,6 +121,8 @@ local add_methods = function(matrix, x, y)
 	matrix.index = index
 	-- multiply_m: matrix multiplication (throws if sizes incompatible)
 	matrix.multiply_m = matrix_multiply
+	-- equals: check one matrix equals another
+	matrix.equals = operator_eq
 end
 
 local msg_dim = " dimension for matrix should be positive"
