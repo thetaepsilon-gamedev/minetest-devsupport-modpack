@@ -86,11 +86,14 @@ local matrix_multiply = function(self, other)
 	local result = mk_uninit(hr, wr)
 	for y = 1, hr, 1 do
 		for x = 1, wr, 1 do
-			local total = 0
+			local total = nil
+			local first = true
 			for i = 1, oplen, 1 do
 				local v = (self:index(y, i) * other:index(i, x))
-				total = total + v
+				total = first and v or (total + v)
+				first = false
 			end
+			assert(total ~= nil, "insanity condition: no additions in matrix multiply!?")
 			assign_element(result, y, x, total)
 		end
 	end
