@@ -33,9 +33,9 @@ local assert_initialised = function(matrix)
 	local height, width = matrix:get_size()
 	local total = height * width
 	for i = 1, total, 1 do
-		assert(type(matrix[i]) == "number",
+		assert(matrix[i] ~= nil,
 			n..": element "..i.."of "..height.."*"..width..
-			" matrix was not a number")
+			" matrix was not present")
 	end
 	return matrix
 end
