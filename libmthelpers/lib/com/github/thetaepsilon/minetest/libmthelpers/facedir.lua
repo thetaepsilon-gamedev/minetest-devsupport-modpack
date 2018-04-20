@@ -142,6 +142,14 @@ local get_rotation_matrix = function(param2)
 end
 facedir.get_rotation_matrix = get_rotation_matrix
 
+-- optimised function variants of the above to avoid matrix multiplies all the time.
+local optimised_rotations =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.facedir.optimised_rotations")
+facedir.get_rotation_function = function(param2)
+	param2check("get_rotation_function()", param2)
+	return optimised_rotations.funcs[param2]
+end
+
 
 
 return facedir
