@@ -46,5 +46,9 @@ i.expect_error = function(expected, ...)
 	end
 end
 
+-- link in standard error codes.
+i.stdcodes =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.errors.stdcodes")
+
 return i
 
