@@ -13,9 +13,12 @@ local i = {}
 
 local esc = function(v) return string.format("%q", v)  end
 
-local format_error = function(e)
-	return "<error type=\""..e.."\" />"
-end
+local format =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.errors.format")
+i.format = format
+local format_error = format.format_error
+
+-- compatibility alias
 i.format_error = format_error
 
 local str_or_empty = function(m) return m and (" " .. msg) or "" end
