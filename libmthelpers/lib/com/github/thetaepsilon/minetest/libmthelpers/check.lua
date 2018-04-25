@@ -1,3 +1,6 @@
+local errors =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.errors")
+
 local check = {}
 check.selftest = {}
 check.explain = {}
@@ -52,13 +55,18 @@ end
 
 
 
+local fe_nf = errors.format_error("bad_arg_not_function") .. " "
 -- convienience boilerplate for checking if a value is a function.
 -- returns the value if valid, else throws an error.
 check.mkfnexploder = function(callername)
 	return function(val, label)
 		if type(label) == nil then label = "checked value" end
 		if type(val) ~= "function" then
-			error(callername..": "..tostring(label).." expected to be a function, got "..tostring(val))
+			error(
+				fe_nf .. callername .. ": " ..
+				tostring(label) ..
+				" expected to be a function, got " ..
+				tostring(val))
 		end
 		return val
 	end
