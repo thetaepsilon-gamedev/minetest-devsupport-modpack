@@ -13,6 +13,7 @@ local components = {
 	"datastructs",
 	"continuations",
 	"profiling",
+	"errors",
 }
 
 
