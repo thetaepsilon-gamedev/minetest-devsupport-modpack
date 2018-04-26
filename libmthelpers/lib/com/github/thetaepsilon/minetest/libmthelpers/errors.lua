@@ -11,7 +11,10 @@ e.g. registration functions which error() if a duplicate exists.
 
 local i = {}
 
-local esc = function(v) return string.format("%q", v)  end
+local esc = function(v)
+	local is_str = (type(v) == "string")
+	return is_str and string.format("%q", v) or tostring(v)
+end
 
 local format =
 	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.errors.format")
