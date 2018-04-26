@@ -34,7 +34,20 @@ e({"args", "expected_t"}, "func")
 
 
 
--- logic errors:
+--[[
+Registration errors.
+Many mods have some sort of mechanism to register callbacks or handlers
+which are called in response to certain classes of events.
+In these cases, things like e.g. duplicate registrations should be a hard error;
+this is because it is a condition that should never arise in correct code,
+or there is a mod conflict that needs resolving
+(and trying to register handlers from two different,
+mutually unaware mods is probably a recipe for weird things to happen).
+]]
+err.register = {}
+-- duplicate registration error as described above.
+e({"register"}, "duplicate")
+
 
 
 return err
