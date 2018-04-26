@@ -55,7 +55,7 @@ end
 
 
 
-local fe_nf = errors.format_error("bad_arg_not_function") .. " "
+local fe_nf = errors.stdcodes.args.expected_t.func
 -- convienience boilerplate for checking if a value is a function.
 -- returns the value if valid, else throws an error.
 check.mkfnexploder = function(callername)
