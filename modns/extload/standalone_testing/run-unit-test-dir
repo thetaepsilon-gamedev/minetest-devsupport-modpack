@@ -1,0 +1,24 @@
+#!/bin/sh
+
+n="$(basename "$0")" || n="run-unit-test-dir";
+n="[${n}]";
+
+if ! test -e './modns-portable-tests.txt'; then {
+	echo "# $n insanity condition: called in directory without indicator tag present" >&2;
+	exit 1;
+}; fi;
+
+lua="$UNIT_TEST_LUA_INTERPRETER";
+if test -z ""; then {
+	lua="luajit";
+}; fi;
+
+for testscript in ./*.lua; do {
+	"$lua" "./$testscript";
+	e=$?
+	if test $e -ne 0; then {
+		echo "# $n aborting due to exit code $e from $testscript" >&2;
+		exit $e;
+	}; fi;
+}; done;
+

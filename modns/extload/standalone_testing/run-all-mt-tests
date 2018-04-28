@@ -1,0 +1,64 @@
+#!/bin/sh
+
+n="$(basename "$0")" || n="run-all-mt-tests";
+n="[${n}]";
+
+err() {
+	echo "# $n" "$@" >&2;
+};
+fatal() {
+	err "$@";
+	exit 1;
+}
+
+if test -z "$MINETEST_MOD_HOME"; then {
+	fatal "MINETEST_MOD_HOME has not been set";
+}; fi;
+
+find_prog() {
+	which "$1" || fatal "Unable to fine needed program $1";
+};
+grep="$(find_prog grep)" || exit $?;
+do_dir="$(find_prog run-unit-test-dir)" || exit $?;
+tr="$(find_prog tr)" || exit $?;
+
+tmp="$(mktemp --suffix=_mt_test)" || fatal "Unable to get a temporary file!";
+cleanup() {
+	err "Cleaning up temporary file due to" "$1";
+	rm "$tmp" || err "warning: unable to clean up temporary file!";
+}
+
+# RIP BSD users, probably
+find "$MINETEST_MOD_HOME" -name modns-portable-tests.txt -print0 > "$tmp";
+"$grep" -zqE '[[:cntrl:]]' "$tmp";
+e=$?
+# if we found a funny character...
+if test $e -eq 0; then {
+	err "External WTF: control characters found in a filename!?";
+	err "Leaving file $tmp intact for inspection";
+	exit 2;
+}; fi;
+
+"$tr" '\0' '\n' < "$tmp" | (IFS='
+'; while read -r filename; do {
+	basedir="$(dirname "$filename")";
+	(
+		cd "$basedir" || exit $?;
+		"$do_dir"; e=$?;
+		if test $e -ne 0; then {
+			err "Stopping due to failure in test directory";
+			fatal "was: ${basedir}";
+		}; fi;
+	) || {
+		e=$?;
+		cleanup "test failure";
+		exit $e;
+	}
+}; done) || {
+	e=$?;
+	exit $e;
+};
+
+err "All test directories ran successfully."
+rm "$tmp" || err "warning: unable to clean up temporary file!";
+
