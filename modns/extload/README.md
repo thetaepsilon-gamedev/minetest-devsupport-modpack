@@ -12,7 +12,7 @@ Things you can find in this directory:
 * The modns.sh shell script can be sourced using your shell
 	to set up a "development environment" where lua scripts will have access to mtrequire.
 * The exampledata directory is an example of configuration data
-	which should be copied to ~/.config/mt\_modns\_extdata.
+	whose contents shoud be copied to ~/.config/mt\_modns\_extdata.
 	This directory contains data needed to load the pure parts of mods outside of minetest.
 
 
