@@ -53,4 +53,4 @@ end
 
 testordering({45, 5656, 4, 567, 564})
 
-print("queue tests completed")
+

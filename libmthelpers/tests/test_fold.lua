@@ -11,5 +11,4 @@ local r = foldl(m_fold.agen(t), op.add, 0)
 --print(r)
 assert(r:unwrap() == 15)
 
-print("fold tests completed successfully.")
 

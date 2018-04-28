@@ -123,9 +123,8 @@ assert(r5, "visit of error result should have returned true")
 
 
 
-print(ok)
-print(err)
+--print(ok)
+--print(err)
 
-print("libmthelpers.functional.result tests passed")
 return true
 

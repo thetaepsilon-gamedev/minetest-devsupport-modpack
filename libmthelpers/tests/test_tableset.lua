@@ -119,7 +119,9 @@ end
 
 local tableset = mtrequire("com.github.thetaepsilon.minetest.libmthelpers.datastructs.tableset")
 
-print(test(tableset.new))
-print(test(tableset.mk_unique))
-print(intkeytests(tableset.mk_unique))
-print("## all test runs ran successfully.")
+test(tableset.new)
+test(tableset.mk_unique)
+intkeytests(tableset.mk_unique)
+
+
+

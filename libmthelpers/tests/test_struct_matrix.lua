@@ -70,5 +70,5 @@ local m6 = matrix.from_xyz(pos3)
 local expected = matrix.new(3, 1, {7, 8, 9})
 assert(expected:equals(m6), "unexpected values for vector -> matrix conversion")
 
-print("Matrix tests passed successfully")
+
 
