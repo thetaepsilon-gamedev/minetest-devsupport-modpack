@@ -14,6 +14,7 @@ local components = {
 	"continuations",
 	"profiling",
 	"errors",
+	"testing",
 }
 
 
