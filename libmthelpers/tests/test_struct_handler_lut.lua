@@ -48,6 +48,13 @@ local assert_hook_fail = function(query, key)
 	assert(err == "EHOOKFAIL")
 end
 
+-- test helper: assert that a given query returns an expected value.
+local assert_expected = function(query, key, expected)
+	local data, err = query({key=key})
+	assert(err == nil)
+	assert(data == expected)
+end
+
 
 
 local dummy = function() end
@@ -168,6 +175,17 @@ local testvecs = {
 		local data, err = dep.query({name=n})
 		assert(data == nil)
 		assert(err == "ENODATA")
+	end,
+
+	function()
+		-- test setting up a *default value* for a lut.
+		-- if no data is found, the default should be returned instead.
+		local default = {}
+		local opts = { default=default }
+		local query, register = handler_lut.mk_handler_lut(example_getkey, label, opts)
+		register(n, testhandler)
+		assert_expected(query, n, testdata)
+		assert_expected(query, "Random McRandface", default)
 	end,
 }
 

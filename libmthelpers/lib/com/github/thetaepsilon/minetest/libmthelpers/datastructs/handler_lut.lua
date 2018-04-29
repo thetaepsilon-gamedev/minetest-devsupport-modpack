@@ -49,23 +49,35 @@ end
 Query routine:
 attempt to look up an appropriate handler based on the provided data.
 ]]
-local query_inner = function(entries, data, getkey)
+local query_inner = function(entries, data, getkey, defaultv)
 	local key = getkey(data)
 	local handler = entries[key]
+	local r, msg
+
 	if handler then
 		local result, err = handler(data)
 		if (result == nil) then
 			-- allow passing through explicit non-fatal "no data",
 			-- otherwise default to hook fail to catch bugs like missing returns
 			local is_nonfatal = (err == "ENODATA")
-			local msg = (is_nonfatal and "ENODATA" or "EHOOKFAIL")
-			return nil, msg
+			msg = (is_nonfatal and "ENODATA" or "EHOOKFAIL")
+			r = nil
 		else
-			return result
+			r = result
+			msg = nil
 		end
 	else
-		return nil, "ENODATA"
+		r = nil
+		msg = "ENODATA"
 	end
+
+	-- if defaultv is set, and we would otherwise return ENODATA,
+	-- instead return the default value without error.
+	if (msg == "ENODATA" and defaultv ~= nil) then
+		msg = nil
+		r = defaultv
+	end
+	return r, msg
 end
 
 -- check if a provided value is a string, or provide a default if nil.
@@ -97,6 +109,9 @@ Construct a handler lookup table.
 		May be nil, in which case a sane but not very descriptive string is used.
 	* [optional] reglabel similarly refers to the "outer" register function if applicable,
 		if this object is used as part of some larger interface.
+	* [optional] opts.default can be any object.
+		If it is non-nil, and query() would otherwise return ENODATA,
+		return this object instead *without error*.
 
 Returns *two functions*, query and register.
 query should be called with an opaque data argument,
@@ -109,6 +124,7 @@ local mk_handler_lut = function(getkey, label, opts)
 	assert(type(label) == "string", n_chl.."label expected to be a string")
 	local hooklabel = string_from_table(n_chl, opts, "hooklabel", "handler function")
 	local reglabel = string_from_table(n_chl, opts, "reglabel", "register()")
+	local defaultv = opts.default
 
 	reglabel = label .. ":" .. reglabel
 	local fncheck = check.mkfnexploder(reglabel)
@@ -116,7 +132,7 @@ local mk_handler_lut = function(getkey, label, opts)
 	getkey = fncheck(getkey, n_chl)
 
 	local query = function(data)
-		return query_inner(entries, data, getkey)
+		return query_inner(entries, data, getkey, defaultv)
 	end
 
 	local register = function(key, handler)
