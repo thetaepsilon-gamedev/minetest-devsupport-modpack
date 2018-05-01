@@ -126,39 +126,6 @@ local nsauto = (dofile(modpath.."nsauto.lua"))(loader)
 _modpath = nil
 
 modns = {
-	register = function(path, component, isdeprecated, opts)
-		if not opts then opts = {} end
-		local sep = opts.pathsep
-		if not sep then
-			sep = "."
-		else
-			if type(sep) ~= "string" then error("path separator not a string!") end
-		end
-
-		local owner, prefixlength, parsed = checkpath(path)
-		if checkexists(path) then error("duplicate component registration for "..path) end
-		local invoker = minetest.get_current_modname()
-		assert(invoker ~= nil, "manual registration not possible when get_current_modname() is nil")
-		if owner ~= nil and owner ~= invoker then
-			error("mod "..invoker.." tried to register "..path.." but that path is reserved by "..owner)
-		end
-		register(path, component, isdeprecated, invoker)
-		logaction(log_trace, "component "..path.." manually registered by mod "..invoker)
-		handledeprecated(path, isdeprecated)
-	end,
-	register_compat_alias = function(path, totarget, isdeprecated)
-		local aliaserror = function(msg)
-			error("compatability alias from "..path.." to real target "..totarget.." "..msg)
-		end
-		checkpath(path)
-		checkpath(totarget)
-		if checkexists(path) then aliaserror("conflicts with an existing component") end
-		if not checkexists(totarget) then aliaserror("does not reference an existing component!") end
-		local invoker = tostring(minetest.get_current_modname())
-		logaction(log_trace, invoker.." registered a compatability alias making "..totarget.." appear as "..path)
-		compat[path] = totarget
-		handledeprecated(path, isdeprecated)
-	end,
 	get = mtrequire,
 	mk_parent_ns = nsauto.ns,
 	mk_parent_ns_noauto = nsauto.ns_noauto,
