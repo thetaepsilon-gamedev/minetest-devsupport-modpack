@@ -137,7 +137,8 @@ modns = {
 
 		local owner, prefixlength, parsed = checkpath(path)
 		if checkexists(path) then error("duplicate component registration for "..path) end
-		local invoker = tostring(minetest.get_current_modname())
+		local invoker = minetest.get_current_modname()
+		assert(invoker ~= nil, "manual registration not possible when get_current_modname() is nil")
 		if owner ~= nil and owner ~= invoker then
 			error("mod "..invoker.." tried to register "..path.." but that path is reserved by "..owner)
 		end
