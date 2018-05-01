@@ -12,34 +12,49 @@ local paths = dofile(_modpath.."paths.lua")
 -- when reserving a hierachial path (such as java-style com.foo.bar...),
 -- the fully-qualified path gets reserved by the owning mod,
 -- but the paths "above" it (e.g. com, com.foo) become shared.
--- other mods can still reserve non-exact matches under shared paths,
+-- other mods can still reserve sibling paths.
 -- but cannot reserve an existing reserved path or it's descendants
 -- (e.g. other mods can still reserve com.foo.anotherbar,
 -- but not com.foo.bar again or com.foo.bar.sub).
--- however, if a path has been made shared already (e.g. the above com.foo)
--- due to a reservation of a sub-path under it,
--- then attempting to reserve it will also fail.
--- in the internal tables, reservations are marked by a string modname,
--- shared paths (with possible sub-entries) are marked by a table,
--- and not-yet-seen paths are nil in their would-be parent.
--- each level down through the tables represents one more level of sub-component.
+-- similarly, a shared path or it's parents (e.g. the above com.foo)
+-- also cannot be exclusively reserved.
+
+-- In the internal tables, shared paths and reservations are two different table structures.
+-- sub-paths are members of a shared path's subentries table.
 --[[
 toplevel = {
 	com = {
-		foo = {
-			bar = "modname",
-			anotherbar = "othermodname"
+		type = shared,
+		subentries = {
+			foo = {
+				type = shared,
+				subentries = {
+					...
+				},
+			},
+			bar =  {
+				type = reservation,
+				modname = "mymod",
+				cfg = { ... },
+			}
 		},
 	},
 }
 ]]
+
+-- internal tree elements as discussed above.
+local shared = {}
+local reservation = {}
+local mk_shared = function() return { type = shared, subentries = {} } end
+local mk_reservation = function(owner) return { type = reservation, owner = owner } end
+
 -- takes the top-level table as described above and an array of path components.
 -- pathtostring depends on the path type and is used to turn the path back into a string for error messages;
--- it is passed a component array and a length.
+-- it is passed a component array and a length, and returns the concatenated path.
 local dname = "try_reserve() "
 local try_reserve = function(toplevel, path, pathtostring, modname)
 	local m = modname
-	if modname then modname = "mod "..modname.." " else modname = "" end
+	assert(m, "why is this even nil")
 	if type(toplevel) ~= "table" then error(dname.."top level was not a table") end
 	local depth = #path
 	if depth < 1 then error(dname.."was passed a zero-sized path") end
@@ -55,27 +70,32 @@ local try_reserve = function(toplevel, path, pathtostring, modname)
 		-- check that either a shared path exists or does not.
 		-- if it is reserved, trigger an error.
 		-- otherwise, create the sub-entry as needed and recurse into it.
-		local t = type(sub)
+		local t = sub and sub.type or nil
 		local errpath = pathtostring(path, index)
 		if not isexact() then
-			if t == "table" then
-				current = sub
-			elseif t == "nil" then
-				local n = {}
-				current[key] = n
-				current = n
+			if t == shared then
+				-- recurse into this sub-path and continue.
+				current = sub.subentries
+			elseif t == nil then
+				-- create new shared path, save it, then continue
+				local new = mk_shared()
+				current[key] = new
+				current = new.subentries
 			else
-				error(modname.."tried to reserve a taken prefix ("..errpath.." taken by "..tostring(sub)..")")
+				-- probably a reservation.
+				assert(t == reservation)
+				error(modname.."tried to reserve a taken prefix ("..errpath.." taken by "..sub.owner..")")
 			end
 		else
 			-- if this is an exact match, check we're not reserving a shared path.
-			if t == "table" then
+			if t == shared then
 				error(modname.."tried to reserve an in-use shared prefix "..errpath)
-			elseif t == "nil" then
+			elseif t == nil then
 				-- path not taken, grant it to this mod
-				current[key] = m
+				current[key] = mk_reservation(modname)
 			else
-				error(modname.."tried to reserve a taken namespace "..errpath.." reserved by "..tostring(sub))
+				assert(t == reservation)
+				error(modname.."tried to reserve a taken namespace "..errpath.." reserved by "..sub.owner)
 			end
 			-- exact path reached match so we can't proceed any further anyway
 			break
@@ -107,18 +127,23 @@ local locate_mod = function(toplevel, path)
 	while true do
 		local key = path[index]
 		local sub = current[key]
-		local t = type(sub)
-		if t == "string" then
-			return sub, index
-		elseif t ~= "table" then
+		local t = sub and sub.type or nil
+		-- encountered a reservation - this mod should own everything under it
+		if t == reservation then
+			return sub.owner, index
+		elseif t == nil then
+			-- reached "end of the thread" in the tree, we can't continue.
 			return nil, index-1
 		end
-		-- error out if we are at the end of the path and there isn't an exact match.
+		assert(t == shared)
+
+		-- at this point, we are at a shared path.
+		-- if this is the end of the given path string, then return failure.
 		if index == depth then return nil, index end
 
 		-- note that if we reach here and no error but not yet found,
 		-- we found a sub-level to go into.
-		current = sub
+		current = sub.subentries
 		index = index + 1
 	end
 end
