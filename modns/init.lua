@@ -1,7 +1,5 @@
 if minetest.global_exists("modns") then error("modns should not already be defined") end
 local registered = {}
-local compat = {}
-local deprecated = {}
 
 local modname = minetest.get_current_modname()
 local dirsep = "/"
@@ -98,17 +96,7 @@ end
 
 function mtrequire(path)
 	checkpath(path)
-	local invoker = tostring(minetest.get_current_modname())
 	local result
-	local compat_alias = compat[path]
-
-	if deprecated[path] then
-		debugger({n="modns.loader.access_deprecated", args={invoker=invoker, path=path}})
-	end
-
-	if compat_alias then
-		return mtrequire(compat_alias)
-	end
 
 	local obj = loader:get(path)
 	if obj then
