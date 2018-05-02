@@ -193,7 +193,7 @@ end
 -- takes the path string to use.
 local ev_cachehit = evprefix.."cache_hit"
 local ev_cachemiss = evprefix.."cache_miss"
-local getcomponent = function(self, pathstring)
+local getcomponent_nocopy = function(self, pathstring)
 	-- objects are only added to the array when completely loaded.
 	-- however, if two files circularly depend on each other via mtrequire(),
 	-- an infinite recursion will occur.
@@ -248,6 +248,15 @@ local getcomponent = function(self, pathstring)
 	else
 		error(result)
 	end
+end
+
+
+
+-- we make a copy of a component object each time it is retrieved.
+-- historically this was to prevent problems due to mods clobbering component tables.
+local getcomponent = function(...)
+	-- no copying actually happens here yet
+	return getcomponent_nocopy(...)
 end
 
 
