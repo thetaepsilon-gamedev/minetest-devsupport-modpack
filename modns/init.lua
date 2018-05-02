@@ -60,16 +60,7 @@ local loader = loaderlib.new(loader_impl, registered, {debugger=debugger})
 
 
 function mtrequire(path)
-	local result
-
-	local obj = loader:get(path)
-	if obj then
-		result = obj
-	else
-		error("component "..path.." does not exist")
-	end
-
-	return result
+	return loader:get(path)
 end
 
 
