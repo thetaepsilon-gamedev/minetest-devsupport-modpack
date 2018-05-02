@@ -29,20 +29,6 @@ end
 
 
 
-local tvisit = dofile(modpath.."tvisit.lua")
-
-local checkexists = function(path)
-	return (registered[path] ~= nil) or (compat[path] ~= nil)
-end
-
-local handledeprecated = function(path, isdeprecated)
-	if isdeprecated then
-		deprecated[path] = true
-	end
-end
-
-
-
 _modpath = modpath
 local reservations = dofile(modpath.."reservations.lua")
 local loader_defaults = dofile(modpath.."loader-defaults.lua")
@@ -70,27 +56,6 @@ local loader_impl = {
 	targetlist = mt_target_list,
 }
 local loader = loaderlib.new(loader_impl, registered, {debugger=debugger})
-
-
-
--- check a path's validity and return the mod name that reserves it, if any.
--- returns the same as reservations:locate(),
--- namely found mod if any, closest prefix length, and parse result.
--- TODO: enable this when issues with automatic sub-component traversal are fixed.
-local checkpath = function(path)
-	if type(path) ~= "string" then error("component path must be a string") end
-	return prefixes:locate(path)
-end
-
-
-
--- internal single-component registration.
-local register = function(path, component, isdeprecated, invoker)
-	checkpath(path)
-	if checkexists(path) then error("duplicate component registration for "..path.." by "..invoker) end
-	registered[path] = component
-	handledeprecated(path, isdeprecated)
-end
 
 
 
