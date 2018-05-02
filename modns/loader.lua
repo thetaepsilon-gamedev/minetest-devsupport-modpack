@@ -33,6 +33,7 @@ the target directory order for this elsewhere in this mod prefers portable code 
 
 local strutil = dofile(_modpath.."strutil.lua")
 local paths = dofile(_modpath.."paths.lua")
+local deepcopy = dofile(_modpath.."deepcopy.lua")
 local interface = {}
 
 local evprefix = "modns.loader."
@@ -255,8 +256,7 @@ end
 -- we make a copy of a component object each time it is retrieved.
 -- historically this was to prevent problems due to mods clobbering component tables.
 local getcomponent = function(...)
-	-- no copying actually happens here yet
-	return getcomponent_nocopy(...)
+	return deepcopy(getcomponent_nocopy(...))
 end
 
 

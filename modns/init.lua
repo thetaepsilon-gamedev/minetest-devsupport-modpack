@@ -27,7 +27,7 @@ local debugger = function(ev)
 	logaction(log_trace, ev.n..args)
 end
 
-local deepcopy = dofile(modpath.."deepcopy.lua")
+
 
 local tvisit = dofile(modpath.."tvisit.lua")
 
@@ -99,7 +99,7 @@ function mtrequire(path)
 
 	local obj = loader:get(path)
 	if obj then
-		result = deepcopy(obj)
+		result = obj
 	else
 		error("component "..path.." does not exist")
 	end
