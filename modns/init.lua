@@ -57,21 +57,9 @@ local loader_impl = {
 }
 local loader = loaderlib.new(loader_impl, registered, {debugger=debugger})
 
-
-
-function mtrequire(path)
-	return loader:get(path)
-end
-
-
 _modpath = modpath
-local nsauto = (dofile(modpath.."nsauto.lua"))(loader)
+modns = dofile(modpath.."construct_interface.lua")(loader)
 _modpath = nil
-
-modns = {
-	get = mtrequire,
-	mk_parent_ns = nsauto.ns,
-	mk_parent_ns_noauto = nsauto.ns_noauto,
-}
+mtrequire = modns.get
 
 minetest.log("info", "modns interface now exported")
