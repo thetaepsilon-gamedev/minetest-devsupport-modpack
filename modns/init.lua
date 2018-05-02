@@ -95,7 +95,6 @@ end
 
 
 function mtrequire(path)
-	checkpath(path)
 	local result
 
 	local obj = loader:get(path)
