@@ -153,7 +153,7 @@ interface.locate_mod = locate_mod
 
 local locatemodself = function(self, pathstr)
 	local result = paths.parse(pathstr, "mod lookup path")
-	return locate_mod(self.entries, result.tokens), result
+	return locate_mod(self.entries, result.tokens)
 end
 -- same but allow the caller to parse it already
 local locatemodparsed = function(self, path)
