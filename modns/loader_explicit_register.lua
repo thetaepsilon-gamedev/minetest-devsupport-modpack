@@ -65,5 +65,5 @@ local loader_self_register = function(self, _path, component)
 	self.cache[_path] = component
 end
 
-return validate_path_owner
+return loader_self_register
 
