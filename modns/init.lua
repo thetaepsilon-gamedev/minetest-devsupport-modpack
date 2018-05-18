@@ -59,6 +59,10 @@ local loader = loaderlib.new(loader_impl, registered, {debugger=debugger})
 
 _modpath = modpath
 modns = dofile(modpath.."construct_interface.lua")(loader)
+-- modns.register() is only really intended for use inside MT.
+modns.register = function(...)
+	return loader:register(...)
+end
 _modpath = nil
 mtrequire = modns.get
 

@@ -268,6 +268,8 @@ local get_current_inflight = function(self)
 	return self.loadstate.current, self.loadstate.current_type
 end
 
+-- explicit registration mechanism (see relevant file)
+local registerself = dofile(_modpath.."loader_explicit_register.lua")
 
 
 --[[
@@ -341,11 +343,16 @@ local construct_inner = function(impl, cache, opts)
 	self.cache = cache
 	self.debugger = debugger
 	self.dirsep = impl.dirpathsep
+	-- link to module for use by loader:register(),
+	-- see loader_explicit_register.lua
+	self.paths = paths
+
 	for objname, _ in pairs(signatures) do
 		self[objname] = impl[objname]
 	end
 	self.get = getcomponent
 	self.get_current_inflight = get_current_inflight
+	self.register = registerself
 	return self
 end
 local construct = function(impl, cache, opts)
