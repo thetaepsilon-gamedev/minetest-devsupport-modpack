@@ -12,23 +12,37 @@ In other words, if your mod uses modns.register() (see construct_interface.lua)
 then other mods using it must declare it in their depends.txt like classic mods.
 ]]
 
+local evprefix = "modns.loader.register."
+local ev_runtime_reg = evprefix.."runtime_reg_banned"
+local ev_missing_reserve_reg = evprefix.."unreserved_reg_banned"
+local ev_reg_conflict = evprefix.."wrong_namespace_owner"
+
 -- check if the invoking mod owns this namespace.
--- FIXME: this is nowhere near as descriptive as the debugger traces elsewhere in this mod...
-local validate_path_owner = function(self, parsedpath)
+local validate_path_owner = function(self, parsedpath, _path)
 	local currentmod = minetest.get_current_modname()
 	if (currentmod == nil) then
+		self.debugger({n=ev_runtime_reg, args={path=_path}})
 		error("explicit registration was called at runtime, cannot check namespace owner")
 	end
 
 	-- look up the mod that owns this namespace,
 	-- and compare it against the current one.
-	local mod, closestdepth = self.reservations:locateparsed(parsedpath)
+	local mod, closestdepth = self.reservations:locateparsed(parsedpath.tokens)
 	local modname = mod
 
 	if (mod == nil) then
+		self.debugger({n=ev_missing_reserve_reg, args={
+			invoker=currentmod,
+			path=_path,
+		}})
 		error("no reservations for this path found, mod must reserve a namespace to register this path")
 	end
 	if (modname ~= currentmod) then
+		self.debugger({n=ev_reg_conflict, args={
+			invoker = currentmod,
+			offending_path = _path,
+			realowner = modname,
+		}})
 		error("mod " .. currentmod ..
 			" tried to register in a namespace already claimed by " ..
 			modname)
@@ -43,7 +57,7 @@ local loader_self_register = function(self, _path, component)
 
 	-- next, we must determine if the calling mod has reserved this path.
 	-- if not raise an error.
-	validate_path_owner(self, parsed)
+	validate_path_owner(self, parsed, _path)
 
 	-- if all goes to plan, directly insert component into cache,
 	-- which will cause the file loading logic to be bypassed
