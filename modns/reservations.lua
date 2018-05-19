@@ -48,11 +48,12 @@ toplevel = {
 local shared = {}
 local reservation = {}
 local mk_shared = function() return { type = shared, subentries = {} } end
-local mk_reservation = function(owner)
+local mk_reservation = function(owner, props)
 	return {
 		type = reservation,
 		data = {
 			owner = owner,
+			properties = props,
 		},
 	}
 end
