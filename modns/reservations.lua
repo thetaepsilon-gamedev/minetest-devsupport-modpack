@@ -59,8 +59,11 @@ end
 
 -- this is needed due to historical reasons, for refactoring purposes.
 local lift_revdata_to_modname = function(revdata)
+	local tr = type(revdata)
+	assert(tr == "table", "revdata was not a table!? "..tr)
 	local n = revdata.owner
-	assert(type(n) == "string")
+	local tn = type(n)
+	assert(tn == "string", "owner was not a string!? "..tn)
 	return n
 end
 _common.lift_revdata_to_modname = lift_revdata_to_modname
