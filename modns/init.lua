@@ -29,6 +29,7 @@ end
 
 
 
+_common = {}
 _modpath = modpath
 local reservations = dofile(modpath.."reservations.lua")
 local loader_defaults = dofile(modpath.."loader-defaults.lua")
@@ -64,6 +65,7 @@ modns.register = function(...)
 	return loader:register(...)
 end
 _modpath = nil
+_common = nil
 mtrequire = modns.get
 
 minetest.log("info", "modns interface now exported")

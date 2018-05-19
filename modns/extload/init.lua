@@ -16,6 +16,8 @@ local getenv_or_bang = function(var)
 	return v
 end
 
+_common = {}
+
 local sep = getenv_or_bang("OSDIRSEP")
 _modpath = getenv_or_bang("MODNS_PATH")..sep
 local datadir = getenv_or_bang("MODNS_LOADER_DATA")
@@ -68,4 +70,5 @@ modns = dofile(_modpath.."construct_interface.lua")(loader)
 mtrequire = modns.get
 
 _modpath = nil
+_common = nil
 
