@@ -53,8 +53,7 @@ local mk_reservation = function(owner) return { type = reservation, owner = owne
 -- it is passed a component array and a length, and returns the concatenated path.
 local dname = "try_reserve() "
 local try_reserve = function(toplevel, path, pathtostring, modname)
-	local m = modname
-	assert(m, "why is this even nil")
+	assert(modname, "why is this even nil")
 	if type(toplevel) ~= "table" then error(dname.."top level was not a table") end
 	local depth = #path
 	if depth < 1 then error(dname.."was passed a zero-sized path") end
