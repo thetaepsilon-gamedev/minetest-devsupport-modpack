@@ -151,7 +151,7 @@ local locate_mod = function(toplevel, path)
 		local t = sub and sub.type or nil
 		-- encountered a reservation - this mod should own everything under it
 		if t == reservation then
-			return lift_revdata_to_modname(sub.data), index
+			return sub.data, index
 		elseif t == nil then
 			-- reached "end of the thread" in the tree, we can't continue.
 			return nil, index-1

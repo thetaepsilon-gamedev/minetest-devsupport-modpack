@@ -126,13 +126,14 @@ local get_modpath = function(self, pathresult, original)
 	local result = pathresult
 	local path = result.tokens
 
-	local modname, closest = reservations:locateparsed(path)
+	local revdata, closest = reservations:locateparsed(path)
 	-- convert the closest match prefix back to a string for tracing/error messages
 	local longest = result.type.tostring(path, closest)
-	if modname == nil then
+	if revdata == nil then
 		debugger({n=ev_modfail, args={path=original, closest=longest}})
 		return nil
 	end
+	local modname = lift_revdata_to_modname(revdata)
 	debugger({n=ev_modfound, args={path=original, modname=modname, parent_ns=longest}})
 
 	-- this is basically equivalent to minetest.get_modpath(modname),

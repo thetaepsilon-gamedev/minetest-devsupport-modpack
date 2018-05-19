@@ -29,8 +29,8 @@ local validate_path_owner = function(self, parsedpath, _path)
 
 	-- look up the mod that owns this namespace,
 	-- and compare it against the current one.
-	local mod, closestdepth = self.reservations:locateparsed(parsedpath.tokens)
-	local modname = mod
+	local revdata, closestdepth = self.reservations:locateparsed(parsedpath.tokens)
+	local modname = lift_revdata_to_modname(revdata)
 
 	if (mod == nil) then
 		self.debugger({n=ev_missing_reserve_reg, args={
