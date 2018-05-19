@@ -12,6 +12,8 @@ In other words, if your mod uses modns.register() (see construct_interface.lua)
 then other mods using it must declare it in their depends.txt like classic mods.
 ]]
 
+local lift_revdata_to_modname = _common.lift_revdata_to_modname
+
 local evprefix = "modns.loader.register."
 local ev_runtime_reg = evprefix.."runtime_reg_banned"
 local ev_missing_reserve_reg = evprefix.."unreserved_reg_banned"

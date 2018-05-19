@@ -34,6 +34,7 @@ the target directory order for this elsewhere in this mod prefers portable code 
 local strutil = dofile(_modpath.."strutil.lua")
 local paths = dofile(_modpath.."paths.lua")
 local deepcopy = dofile(_modpath.."deepcopy.lua")
+local lift_revdata_to_modname = _common.lift_revdata_to_modname
 local interface = {}
 
 local evprefix = "modns.loader."

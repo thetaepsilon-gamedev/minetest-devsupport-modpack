@@ -63,6 +63,7 @@ local lift_revdata_to_modname = function(revdata)
 	assert(type(n) == "string")
 	return n
 end
+_common.lift_revdata_to_modname = lift_revdata_to_modname
 
 
 
