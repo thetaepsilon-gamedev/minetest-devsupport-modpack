@@ -42,6 +42,8 @@ toplevel = {
 }
 ]]
 
+
+
 -- internal tree elements as discussed above.
 local shared = {}
 local reservation = {}
@@ -54,6 +56,15 @@ local mk_reservation = function(owner)
 		},
 	}
 end
+
+-- this is needed due to historical reasons, for refactoring purposes.
+local lift_revdata_to_modname = function(revdata)
+	local n = revdata.owner
+	assert(type(n) == "string")
+	return n
+end
+
+
 
 -- takes the top-level table as described above and an array of path components.
 -- pathtostring depends on the path type and is used to turn the path back into a string for error messages;
@@ -136,7 +147,7 @@ local locate_mod = function(toplevel, path)
 		local t = sub and sub.type or nil
 		-- encountered a reservation - this mod should own everything under it
 		if t == reservation then
-			return sub.data.owner, index
+			return lift_revdata_to_modname(sub.data), index
 		elseif t == nil then
 			-- reached "end of the thread" in the tree, we can't continue.
 			return nil, index-1
