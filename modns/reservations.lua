@@ -75,7 +75,7 @@ _common.lift_revdata_to_modname = lift_revdata_to_modname
 -- pathtostring depends on the path type and is used to turn the path back into a string for error messages;
 -- it is passed a component array and a length, and returns the concatenated path.
 local dname = "try_reserve() "
-local try_reserve = function(toplevel, path, pathtostring, modname)
+local try_reserve = function(toplevel, path, pathtostring, modname, props)
 	assert(modname, "why is this even nil")
 	if type(toplevel) ~= "table" then error(dname.."top level was not a table") end
 	local depth = #path
@@ -114,7 +114,7 @@ local try_reserve = function(toplevel, path, pathtostring, modname)
 				error(modname.."tried to reserve an in-use shared prefix "..errpath)
 			elseif t == nil then
 				-- path not taken, grant it to this mod
-				current[key] = mk_reservation(modname)
+				current[key] = mk_reservation(modname, props)
 			else
 				assert(t == reservation)
 				error(modname.."tried to reserve a taken namespace "..errpath.." reserved by "..sub.owner)
@@ -182,13 +182,13 @@ local locatemodparsed = function(self, path)
 	return locate_mod(self.entries, path)
 end
 
-local reserveself = function(self, pathstring, modname)
+local reserveself = function(self, pathstring, modname, props)
 	local label = "namespace reservation [in mod "..modname.."]"
 	-- this throws on a bad component path so no need to nil check.
 	-- mods really should make sure these are valid and correct.
 	local result = paths.parse(pathstring, label)
 	-- try to reserve this path or fail
-	try_reserve(self.entries, result.tokens, result.type.tostring, modname)
+	try_reserve(self.entries, result.tokens, result.type.tostring, modname, props)
 	self.debugger({n="modns.reservation", args={mod=modname, path=pathstring}})
 	return true
 end
@@ -214,7 +214,7 @@ local populate_reservations = function(reservations, modlist, ioimpl)
 	for index, modname in ipairs(modlist) do
 		local file = ioimpl:open(modname, "reserved-namespaces.txt")
 		if file ~= nil then for entry in file:lines() do
-			reservations:reserve(entry, modname)
+			reservations:reserve(entry, modname, nil)
 		end end
 	end
 end
