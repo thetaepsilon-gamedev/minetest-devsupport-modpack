@@ -32,7 +32,7 @@ local validate_path_owner = function(self, parsedpath, _path)
 	local revdata, closestdepth = self.reservations:locateparsed(parsedpath.tokens)
 	local modname = lift_revdata_to_modname(revdata)
 
-	if (mod == nil) then
+	if (revdata == nil) then
 		self.debugger({n=ev_missing_reserve_reg, args={
 			invoker=currentmod,
 			path=_path,
