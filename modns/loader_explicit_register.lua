@@ -30,7 +30,6 @@ local validate_path_owner = function(self, parsedpath, _path)
 	-- look up the mod that owns this namespace,
 	-- and compare it against the current one.
 	local revdata, closestdepth = self.reservations:locateparsed(parsedpath.tokens)
-	local modname = lift_revdata_to_modname(revdata)
 
 	if (revdata == nil) then
 		self.debugger({n=ev_missing_reserve_reg, args={
@@ -39,6 +38,8 @@ local validate_path_owner = function(self, parsedpath, _path)
 		}})
 		error("no reservations for this path found, mod must reserve a namespace to register this path")
 	end
+
+	local modname = lift_revdata_to_modname(revdata)
 	if (modname ~= currentmod) then
 		self.debugger({n=ev_reg_conflict, args={
 			invoker = currentmod,
