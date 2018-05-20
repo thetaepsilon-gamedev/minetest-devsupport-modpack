@@ -1,6 +1,7 @@
 local interface = {}
 
 local paths = dofile(_modpath.."paths.lua")
+local rc = dofile(_modpath.."reservation_config.lua")
 
 -- reservation manager.
 -- given a list of all mods and a IO implementation,
@@ -182,11 +183,15 @@ local locatemodparsed = function(self, path)
 	return locate_mod(self.entries, path)
 end
 
-local reserveself = function(self, pathstring, modname, props)
+local reserveself = function(self, pathstring, modname, _props)
 	local label = "namespace reservation [in mod "..modname.."]"
 	-- this throws on a bad component path so no need to nil check.
 	-- mods really should make sure these are valid and correct.
 	local result = paths.parse(pathstring, label)
+
+	-- validate the passed properties now before it is potentially accessed.
+	local props = rc.validate_reserve_properties(_props)
+
 	-- try to reserve this path or fail
 	try_reserve(self.entries, result.tokens, result.type.tostring, modname, props)
 	self.debugger({n="modns.reservation", args={mod=modname, path=pathstring}})
