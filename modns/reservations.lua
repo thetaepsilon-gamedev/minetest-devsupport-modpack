@@ -215,12 +215,23 @@ local construct = function(opts)
 end
 interface.new = construct
 
+
+
+
+-- functions to handle loading in reservation data files at init time.
+local handle_classic_config = function(reservations, modname, file)
+	for entry in file:lines() do
+		reservations:reserve(entry, modname, nil)
+	end
+end
+
+local fn_classic = "reserved-namespaces.txt"
 local populate_reservations = function(reservations, modlist, ioimpl)
 	for index, modname in ipairs(modlist) do
-		local file = ioimpl:open(modname, "reserved-namespaces.txt")
-		if file ~= nil then for entry in file:lines() do
-			reservations:reserve(entry, modname, nil)
-		end end
+		local file = ioimpl:open(modname, fn_classic)
+		if file ~= nil then
+			handle_classic_config(reservations, modname, file)
+		end
 	end
 end
 interface.populate = populate_reservations
