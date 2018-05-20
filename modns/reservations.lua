@@ -2,6 +2,7 @@ local interface = {}
 
 local paths = dofile(_modpath.."paths.lua")
 local rc = dofile(_modpath.."reservation_config.lua")
+local load_config_file = dofile(_modpath.."config_loader.lua")
 
 -- reservation manager.
 -- given a list of all mods and a IO implementation,
@@ -224,13 +225,26 @@ local handle_classic_config = function(reservations, modname, file)
 		reservations:reserve(entry, modname, nil)
 	end
 end
+local handle_lua_config = function(reservations, modname, file)
+	local data = load_config_file(file)
+	for k, v in pairs(data) do
+		-- keys are namespace strings, values are property tables
+		reservations:reserve(k, modname, v)
+	end
+end
 
 local fn_classic = "reserved-namespaces.txt"
+local fn_lua = "mod_reservations.lua"
 local populate_reservations = function(reservations, modlist, ioimpl)
 	for index, modname in ipairs(modlist) do
-		local file = ioimpl:open(modname, fn_classic)
+		local file = ioimpl:open(modname, fn_lua)
 		if file ~= nil then
-			handle_classic_config(reservations, modname, file)
+			handle_lua_config(reservations, modname, file)
+		else
+			local file = ioimpl:open(modname, fn_classic)
+			if file ~= nil then
+				handle_classic_config(reservations, modname, file)
+			end
 		end
 	end
 end
