@@ -54,10 +54,24 @@ end
 
 
 
+-- lua's inbuilt load() is sensitive to the difference between no 2nd argument and nil
+-- (the latter causes it to throw a type error).
+-- create a wrapper around it to avoid this edge case
+local loadl = function(loadfunc, label)
+	if label == nil then
+		return load(loadfunc)
+	else
+		return load(loadfunc, label)
+	end
+end
+
+
+
 local n = "load_config_file():"
 local load_config_file = function(file, label)
 	local loader = create_file_load_iterator(file, n)
-	local chunk, err = load(loader, label)
+
+	local chunk, err = loadl(loader, label)
 	if not chunk then
 		error("parsing error occured while loading config file: "..err)
 	end
