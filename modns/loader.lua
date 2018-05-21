@@ -92,6 +92,7 @@ local filter = function(table, f)
 end
 
 -- constructs the list of modpath-relative files to attempt loading.
+-- TODO: reservation config needs to get here!
 local calculate_relative_paths = function(targetlist, dirsep, path)
 	local result = {}
 	local initfile = "init"
@@ -133,6 +134,8 @@ local get_modpath = function(self, pathresult, original)
 		debugger({n=ev_modfail, args={path=original, closest=longest}})
 		return nil
 	end
+	local props = revdata.properties
+	assert(props ~= nil)
 	local modname = lift_revdata_to_modname(revdata)
 	debugger({n=ev_modfound, args={path=original, modname=modname, parent_ns=longest}})
 
@@ -146,7 +149,7 @@ local get_modpath = function(self, pathresult, original)
 		ev = {n=ev_modpathfound, args={modname=modname, modpath=modpath}}
 	end
 	debugger(ev)
-	return modpath, modname
+	return modpath, modname, props
 end
 
 
@@ -162,7 +165,8 @@ local find_component_file = function(self, pathresult, original)
 
 	-- work out relative paths, and which mod directory should contain them.
 	local relatives = calculate_relative_paths(self.targetlist, dirsep, pathresult.tokens)
-	local modpath_base, modname = get_modpath(self, pathresult, original)
+	local modpath_base, modname, props = get_modpath(self, pathresult, original)
+	assert(props ~= nil)
 	if modpath_base == nil then return nil, "no mod claims that namespace" end
 
 	local attempts = 0
