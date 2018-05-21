@@ -101,6 +101,25 @@ interface.parse = classifypath
 
 
 --[[
+get the suffix of a path after a certain number of base elements.
+returns a new path containing just those suffix tokens,
+or nil and an error identifier.
+]]
+local tail = function(path, n)
+	local len = #path
+	if n > len then return nil, "EOUTOFBOUNDS" end
+
+	local tpos = 1
+	local ret = {}
+	for i = n + 1, len, 1 do
+		ret[tpos] = path[i]
+		tpos = tpos + 1
+	end
+	return ret
+end
+interface.tail = tail
+
+--[[
 split a path (just the tokens table) into two new ones,
 where the number of elements in the first path is specified by n,
 and the second path contains whatever remained after.
