@@ -100,4 +100,33 @@ interface.parse = classifypath
 
 
 
+--[[
+split a path (just the tokens table) into two new ones,
+where the number of elements in the first path is specified by n,
+and the second path contains whatever remained after.
+returns either a table { prefix = path1, suffix = remainder }
+or nil and an error identifier (e.g. n was > length of path)
+]]
+local split = function(path, n)
+	local len = #path
+	if n > len then return nil, "EOUTOFBOUNDS" end
+	local prefix = {}
+	local suffix = {}
+
+	for i = 1, n, 1 do
+		prefix[i] = path[i]
+	end
+
+	local ipos = 1
+	for i = n + 1, len, 1 do
+		suffix[ipos] = path[i]
+		ipos = ipos + 1
+	end
+
+	return { prefix = prefix, suffix = suffix }
+end
+interface.split = split
+
+
+
 return interface
