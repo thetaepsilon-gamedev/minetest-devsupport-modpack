@@ -92,8 +92,8 @@ local filter = function(table, f)
 end
 
 -- constructs the list of modpath-relative files to attempt loading.
--- TODO: reservation config needs to get here!
-local calculate_relative_paths = function(targetlist, dirsep, path)
+local calculate_relative_paths = function(targetlist, dirsep, path, extraprops)
+	assert(type(extraprops) == "table")
 	local result = {}
 	local initfile = "init"
 	local ext = ".lua"
@@ -164,9 +164,13 @@ local find_component_file = function(self, pathresult, original)
 	local dirsep = self.dirsep
 
 	-- work out relative paths, and which mod directory should contain them.
-	local relatives = calculate_relative_paths(self.targetlist, dirsep, pathresult.tokens)
 	local modpath_base, modname, props = get_modpath(self, pathresult, original)
 	assert(props ~= nil)
+	local relatives = calculate_relative_paths(
+		self.targetlist,
+		dirsep,
+		pathresult.tokens,
+		props)
 	if modpath_base == nil then return nil, "no mod claims that namespace" end
 
 	local attempts = 0
