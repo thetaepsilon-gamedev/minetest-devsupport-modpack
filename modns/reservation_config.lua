@@ -17,14 +17,52 @@ In this file you will find the code which performs validation on these tables.
 
 
 
+-- list of property key validation functions.
+local msg_searchdir_type =
+	"property search_dirs expected to be a table or string, got "
+
 local allowed_keys = {
+	-- alternative (shorter?) paths to look for relative to libs or natives.
+	-- does not need directory separators, can just be plain dir name.
+	search_dirs = function(cfg)
+		local t = type(cfg)
+
+		-- if it's a single string, just return that as length one list.
+		if t == "string" then return { cfg } end
+		assert(t == "table", msg_searchdir_type .. t)
+
+		-- actual lists are a bit more complex, needs checking of keys
+		local count = 0
+		for k, v in pairs(cfg) do
+			if type(k) ~= "number" then
+				error("non-numeric key found in search_dirs list")
+			end
+			assert(
+				type(v) == "string",
+				"non-string value found in search_dirs list")
+			count = count + 1
+		end
+		assert(count > 0, "at least one directory required in search_dir list")
+
+		-- we can't really do any more validation than this portably.
+		return cfg
+	end,
 }
+
+
+
 local check_table_keys = function(props)
 	local ret = {}
 	-- no extra props currently supported,
 	-- so just raise error on *any* key.
 	for k, v in pairs(props) do
-		error("No extra reservation properties currently supported")
+		assert(type(k) == "string", "non-string property name encountered")
+
+		local validate = allowed_keys[k]
+		if not validate then
+			error("unrecognised reservation property " .. k)
+		end
+		ret[k] = validate(v)
 	end
 	return ret
 end
