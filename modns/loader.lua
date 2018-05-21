@@ -149,7 +149,12 @@ local get_modpath = function(self, pathresult, original)
 		ev = {n=ev_modpathfound, args={modname=modname, modpath=modpath}}
 	end
 	debugger(ev)
-	return modpath, modname, props
+
+	return {
+		modbasedir = modpath,
+		modname = modname,
+		revproperties = props,
+	}
 end
 
 
@@ -164,16 +169,19 @@ local find_component_file = function(self, pathresult, original)
 	local dirsep = self.dirsep
 
 	-- work out relative paths, and which mod directory should contain them.
-	local modpath_base, modname, props = get_modpath(self, pathresult, original)
+	local ownerdata = get_modpath(self, pathresult, original)
+	if ownerdata == nil then return nil, "no mod claims that namespace" end
+
+	local props = ownerdata.revproperties
 	assert(props ~= nil)
 	local relatives = calculate_relative_paths(
 		self.targetlist,
 		dirsep,
 		pathresult.tokens,
 		props)
-	if modpath_base == nil then return nil, "no mod claims that namespace" end
 
 	local attempts = 0
+	local modpath_base = ownerdata.modbasedir
 	for index, relpath in ipairs(relatives) do
 		attempts = attempts + 1
 		-- construct the full path and ask if it exists.
@@ -185,7 +193,8 @@ local find_component_file = function(self, pathresult, original)
 		end
 	end
 	debugger({n=ev_notfound, args={component=original, attempts=attempts}})
-	return nil, "mod "..modname.." registered that namespace but did not have that component"
+	return nil, "mod " .. ownerdata.modname ..
+		" registered that namespace but did not have that component"
 end
 
 
