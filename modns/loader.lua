@@ -92,8 +92,9 @@ local filter = function(table, f)
 end
 
 -- constructs the list of modpath-relative files to attempt loading.
-local calculate_relative_paths = function(targetlist, dirsep, path, extraprops)
+local calculate_relative_paths = function(targetlist, dirsep, path, extraprops, pathtail)
 	assert(type(extraprops) == "table")
+	assert(type(pathtail) == "table")
 	local result = {}
 	local initfile = "init"
 	local ext = ".lua"
@@ -150,10 +151,16 @@ local get_modpath = function(self, pathresult, original)
 	end
 	debugger(ev)
 
+	-- save the part of the path that is "inside" the reservation.
+	-- this is used in the case that the mod specified an alias path.
+	local tail, err = paths.tail(path, closest)
+	if tail == nil then error("WTF condition: tail path was nil!? "..err) end
+
 	return {
 		modbasedir = modpath,
 		modname = modname,
 		revproperties = props,
+		path_suffix = tail,
 	}
 end
 
@@ -174,11 +181,14 @@ local find_component_file = function(self, pathresult, original)
 
 	local props = ownerdata.revproperties
 	assert(props ~= nil)
+	local tail = ownerdata.path_suffix
+	assert(tail ~= nil)
 	local relatives = calculate_relative_paths(
 		self.targetlist,
 		dirsep,
 		pathresult.tokens,
-		props)
+		props,
+		tail)
 
 	local attempts = 0
 	local modpath_base = ownerdata.modbasedir
