@@ -78,15 +78,26 @@ local calculate_relative_paths = function(targetlist, dirsep, path, extraprops, 
 	local result = {}
 	local initfile = "init"
 	local ext = ".lua"
-	local allinone = encode_safe_filename(path)
-	local safepath = filter(path, encode_safe_path_component)
+	-- possible paths for a component,
+	-- given the path "com.github.user.myawesomemod.foomodule"
+	-- com.github.user.myawesomemod.foomodule.lua
+	local path_allinone = encode_safe_filename(path) .. ext
 
+	local relatives = {}
+	local safepath = filter(path, encode_safe_path_component)
+	-- com/github/user/myawesomemod/foomodule
+	local basepath = table.concat(safepath, dirsep)
+	-- com/github/user/myawesomemod/foomodule.lua
+	local path_justname = basepath .. ext
+	-- com/github/user/myawesomemod/foomodule/init.lua
+	local path_initfile = basepath .. dirsep .. initfile .. ext
+
+	-- there can exist both portable and native lookup directories for each candidate.
 	for _, target in ipairs(targetlist) do
 		target = target..dirsep
-		table.insert(result, target..allinone..ext)
-		local basepath = table.concat(safepath, dirsep)
-		table.insert(result, target..basepath..ext)
-		table.insert(result, target..basepath..dirsep..initfile..ext)
+		table.insert(result, target .. path_allinone)
+		table.insert(result, target .. path_justname)
+		table.insert(result, target .. path_initfile)
 	end
 
 	return result
