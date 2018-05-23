@@ -36,7 +36,8 @@ the target directory order for this elsewhere in this mod prefers portable code 
 local paths = dofile(_modpath.."paths.lua")
 local deepcopy = dofile(_modpath.."deepcopy.lua")
 local lift_revdata_to_modname = _common.lift_revdata_to_modname
-local calculate_relative_paths = dofile(_modpath.."search_dirs.lua")
+local search_dirs = dofile(_modpath.."search_dirs.lua")
+local calculate_relative_paths = search_dirs.relative_to_mod_d
 local interface = {}
 
 local evprefix = "modns.loader."

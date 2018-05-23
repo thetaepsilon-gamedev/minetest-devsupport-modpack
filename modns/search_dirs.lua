@@ -25,14 +25,23 @@ local interface = {}
 -- handle the shorter paths inside mod writer-supplied alias directories.
 -- say the mod writer only wanted to create e.g.
 -- short_mod_dir/foomodule/... (leading part of namespace chopped)
-local calculate_alias_dir_relative_paths = function(dirsep, pathtail)
+local paths_relative_to_alias_d = function(dirsep, pathtail)
 	error("not implemented")
 end
+interface.relative_to_alias_d = paths_relative_to_alias_d
 
 
 
 -- constructs the list of modpath-relative files to attempt loading.
-local calculate_relative_paths = function(targetlist, dirsep, path, extraprops, pathtail)
+local paths_relative_to_mod_d =
+	function(
+		targetlist,
+		dirsep,
+		path,
+		extraprops,
+		pathtail
+	)
+
 	assert(type(extraprops) == "table")
 	assert(type(pathtail) == "table")
 	local result = {}
@@ -62,6 +71,7 @@ local calculate_relative_paths = function(targetlist, dirsep, path, extraprops, 
 
 	return result
 end
+interface.relative_to_mod_d = paths_relative_to_mod_d
 
-return calculate_relative_paths
+return interface
 
