@@ -99,9 +99,25 @@ local paths_relative_to_mod_d =
 	-- com/github/user/myawesomemod/foomodule/init.lua
 	local path_initfile = basepath .. dirsep .. initfile .. ext
 
+	local search_dirs = extraprops.search_dirs
+	local alias_relatives
+	if search_dirs then
+		alias_relatives = paths_relative_to_alias_d(dirsep, pathtail)
+	end
+
 	-- there can exist both portable and native lookup directories for each candidate.
 	for _, target in ipairs(targetlist) do
 		target = target..dirsep
+
+		-- alias directories take higher precedence than default paths.
+		if search_dirs then for i, aliasdir in ipairs(search_dirs) do
+			-- yes, I'm shadowing the outer variable on purpose
+			local target = target .. aliasdir .. dirsep
+			for j, candidate in ipairs(alias_relatives) do
+				add(target .. candidate)
+			end
+		end end
+
 		add(target .. path_allinone)
 		add(target .. path_justname)
 		add(target .. path_initfile)
