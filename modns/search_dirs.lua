@@ -19,6 +19,9 @@ local filter = function(table, f)
 	return ret
 end
 
+local initfile = "init"
+local ext = ".lua"
+
 
 
 local interface = {}
@@ -26,7 +29,39 @@ local interface = {}
 -- say the mod writer only wanted to create e.g.
 -- short_mod_dir/foomodule/... (leading part of namespace chopped)
 local paths_relative_to_alias_d = function(dirsep, pathtail)
-	error("not implemented")
+	-- note that the suffix tail has the potential to be zero elements here,
+	-- so in that case we skip the "all-in-one" and "just filename" paths,
+	-- otherwise we'd end up with subdir/.lua which would
+	-- a) look strange and b) cause problems on unix and windows alike if it existed.
+	local ret = {}
+	local safepath = filter(pathtail, encode_safe_path_component)
+	-- myaliasdir/sub/foo
+	-- may become either sub/foo.lua or sub/foo/init.lua
+	local basepath = table.concat(safepath, dirsep)
+
+	local alias_aio = nil
+	local zero = (#pathtail == 0)
+	if not zero then
+		-- myaliasdir/sub.foo.lua
+		alias_aio = encode_safe_filename(pathtail) .. ext
+		table.insert(ret, alias_aio)
+
+		-- myaliasdir/sub/foo.lua
+		-- note that if #pathtail = 1, would just be /sub.lua,
+		-- which would end up the same as the all-in-one path.
+		-- hence, skip this if turns out to be the same.
+		local alias_justname = basepath .. ext
+		if alias_justname ~= alias_aio then
+			table.insert(ret, alias_justname)
+		end
+	end
+
+	-- myaliasdir/sub/foo/init.lua
+	-- or, if tail is zero size, just myaliasdir/init.lua
+	basepath = (basepath ~= "") and (basepath .. "/") or ""
+	table.insert(ret, basepath .. initfile .. ext)
+
+	return ret
 end
 interface.relative_to_alias_d = paths_relative_to_alias_d
 
@@ -45,8 +80,6 @@ local paths_relative_to_mod_d =
 	assert(type(extraprops) == "table")
 	assert(type(pathtail) == "table")
 	local result = {}
-	local initfile = "init"
-	local ext = ".lua"
 	-- possible paths for a component,
 	-- given the path "com.github.user.myawesomemod.foomodule"
 	-- com.github.user.myawesomemod.foomodule.lua
