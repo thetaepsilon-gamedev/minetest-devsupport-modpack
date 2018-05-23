@@ -80,6 +80,11 @@ local paths_relative_to_mod_d =
 	assert(type(extraprops) == "table")
 	assert(type(pathtail) == "table")
 	local result = {}
+	local ipos = 0
+	local add = function(v)
+		ipos = ipos + 1
+		result[ipos] = v
+	end
 	-- possible paths for a component,
 	-- given the path "com.github.user.myawesomemod.foomodule"
 	-- com.github.user.myawesomemod.foomodule.lua
@@ -97,9 +102,9 @@ local paths_relative_to_mod_d =
 	-- there can exist both portable and native lookup directories for each candidate.
 	for _, target in ipairs(targetlist) do
 		target = target..dirsep
-		table.insert(result, target .. path_allinone)
-		table.insert(result, target .. path_justname)
-		table.insert(result, target .. path_initfile)
+		add(target .. path_allinone)
+		add(target .. path_justname)
+		add(target .. path_initfile)
 	end
 
 	return result
