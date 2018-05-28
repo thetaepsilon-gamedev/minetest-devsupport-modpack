@@ -74,5 +74,20 @@ coords.round_to_node = center_on_node
 
 
 
+-- identify which world chunk a given arbitary position is in.
+-- as this is not a normal world position,
+-- x y and z of the chunk (not world space coordinates!) are return separately.
+local get_chunk_axis = function(axis)
+	-- may be e.g. -0.3 but still in the 0,0,0 block
+	local nodev = center(axis)
+	return math.floor(axis / 16)
+end
+local gca = get_chunk_axis
+local get_chunk_xyz = function(pos)
+	return gca(pos.x), gca(pos.y), gca(pos.z)
+end
+coords.get_chunk_xyz = get_chunk_xyz
+
+
 
 return coords
