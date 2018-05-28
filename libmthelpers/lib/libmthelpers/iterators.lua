@@ -32,6 +32,34 @@ iterators.mkarrayiterator = function(t)
 	local tableco = function(t) for _, v in ipairs(t) do coroutine.yield(v) end end
 	return iterators.mkiterator(tableco, t)
 end
+-- similar but pass an explicit length to stop at.
+-- note that this may still terminate early, due to nil indicating halt.
+-- beware partial application!
+iterators.array_fixed_ = function(n)
+	assert(type(n) == "number")
+
+	return function(t)
+		local i = 0
+		return function()
+			if i == n then return nil end
+			i = i + 1
+			return t[i]
+		end
+	end
+end
+-- apply function over values returned from an iterator.
+local fmap_ = function(f)
+	assert(type(f) == "function")
+	return function(base)
+		assert(type(f) == "function")
+		return function()
+			local v = base()
+			if v == nil then return nil end
+			return f(v)
+		end
+	end
+end
+iterators.fmap_ = fmap_
 
 -- note that the above uses ipairs and this uses pairs.
 -- both only care about values and not keys;
