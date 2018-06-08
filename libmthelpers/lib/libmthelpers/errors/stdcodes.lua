@@ -47,7 +47,7 @@ e({"table"}, "unknown_key")
 e({"table"}, "missing_key")
 -- key was expected to be a certain value due to other conditions.
 -- may be accompanied with more information elaborating on this.
-e({"table"}, "bad_key")
+e({"table"}, "bad_key_value")
 
 
 
