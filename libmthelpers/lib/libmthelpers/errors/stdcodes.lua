@@ -43,6 +43,8 @@ e.g. for when a table is used as a poor man's keyword arguments.
 err.table = {}
 -- unknown key in table?
 e({"table"}, "unknown_key")
+-- a required key was missing.
+e({"table"}, "missing_key")
 -- key was expected to be a certain value due to other conditions.
 -- may be accompanied with more information elaborating on this.
 e({"table"}, "bad_key")
