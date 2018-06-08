@@ -31,6 +31,21 @@ e({"args", "expected_t"}, "number")
 -- be a bit careful here as function is a keyword,
 -- so attempting to call it that would cause client problems.
 e({"args", "expected_t"}, "func")
+e({"args", "expected_t"}, "table")
+
+
+
+--[[
+Generic table data type errors - wrong keys, missing values etc.
+Note that more specific use cases should probably have more relevant codes,
+e.g. for when a table is used as a poor man's keyword arguments.
+]]
+err.table = {}
+-- unknown key in table?
+e({"table"}, "unknown_key")
+-- key was expected to be a certain value due to other conditions.
+-- may be accompanied with more information elaborating on this.
+e({"table"}, "bad_key")
 
 
 
