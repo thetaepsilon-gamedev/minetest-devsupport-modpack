@@ -72,6 +72,15 @@ local t2 = {
 	c = key(3),
 }
 reject(t1, t2)
+
+-- likewise check what happens if the key is present but different.
+local t2 = {
+	a = key(1),
+	b = key(42),
+	c = key(3),
+}
+reject(t1, t2)
+
 -- by default, input having keys that the *reference* doesn't is not a failure.
 local t2 = {
 	a = key(1),
@@ -81,5 +90,37 @@ local t2 = {
 }
 assert(keq(t1, t2))
 -- however, this is not allowed in strict mode
-assert(not compare_({comparator=kcomp,strict=true})(t1, t2))
+local c2 = compare_({comparator=kcomp,strict=true})
+assert(not c2(t1, t2))
+
+
+
+-- we can ask for an extra return value describing an error, if any.
+-- as it is possible that this would change behaviour if one did e.g.
+-- f(comparef(...)) (in other words, f() would see an extra argument),
+-- it is not enabled by default - here we verify this default behaviour.
+local countargs = function(...)
+	return select("#", ...)
+end
+assert(countargs(c2(t1, t2)) == 1)
+
+-- now we enable the error object by adjusting properties of the partially applied function.
+local c3 = compare_({comparator=kcomp,strict=true,verbose=true})
+local result, ex = c3(t1, t2)
+-- truth value should not differ.
+assert(not result)
+-- let's examine the object shall we...
+local err =
+	mtrequire("com.github.thetaepsilon.minetest.libmthelpers.errors.stdcodes")
+assert(ex.reason == err.table.unknown_key)
+
+-- please note that further testing of error codes is not done here on purpose;
+-- the error code object is intrinsically tightly coupled
+-- to the internals of compare_.
+-- it is more intended to provide the ability to localise error descriptions
+-- to the user's language preferences (as opposed to hard-coded strings),
+-- as well as providing a more structured way to pass errors along
+-- (a la java's caused by: in stack traces).
+
+
 
