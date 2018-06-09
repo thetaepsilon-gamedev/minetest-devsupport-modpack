@@ -23,8 +23,8 @@ local nothrow = function(label)
 end
 local are_vectors_equal = function(vec1, vec2, strict, _nothrow)
 	local e = (_nothrow and nothrow or throw)
-	if not checkvec(vec1) then return e("vec1") end
-	if not checkvec(vec2) then return e("vec2") end
+	if not checkvec(vec1, strict) then return e("vec1") end
+	if not checkvec(vec2, strict) then return e("vec2") end
 
 	return (vec1.x == vec2.x) and
 		(vec1.y == vec2.y) and
