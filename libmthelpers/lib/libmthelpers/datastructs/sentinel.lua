@@ -93,11 +93,18 @@ local err =
 
 local badop = err.struct.bad_operator
 local mk_binary_op = function(label)
-	local msg = badop .. " attempted to use " .. label ..
+	local msg = badop .. " attempted to use binary " .. label ..
 		" operator on sentinel object"
 
-	-- doesn't really matter how many args it gets
-	return function(...)
+	return function(opr1, opr2)
+		error(msg)
+	end
+end
+local mk_unary_op = function(label)
+	local msg = badop .. " attempted to use unary " .. label ..
+		" operator on sentinel object"
+
+	return function(operand)
 		error(msg)
 	end
 end
@@ -121,16 +128,52 @@ local refuse_unary_ops = {
 	-- call is somewhat special, it diagnoses # of arguments
 }
 
-local msg_index = err.struct.bad_key_access .. " attempted to load key from sentinel value"
-local meta_index = function(...)
-	error()
-end
+local bug = "(did you accidentally use a sentinel as a table?)"
+local msg_index = err.struct.bad_key_access ..
+	" attempted to load key from sentinel value "..bug..", "
+local msg_newindex = err.struct.bad_key_write ..
+	" attempted to write key to sentinel value "..bug..", "
+local msg_call = badop .. " attempted to call a sentinel value as a function, "
+
+local extra_ops = {
+	__index = function(sentinel, key)
+		assert(is_sentinel[sentinel])
+		error(msg_index .. "sentinel type was " .. get_label(sentinel) ..
+			", key type was " .. type_sentinel(key))
+	end,
+	__newindex = function(sentinel, key, value)
+		assert(is_sentinel[sentinel])
+		error(msg_newindex .. "sentinel type was " .. get_label(sentinel) ..
+			", key type was " .. type_sentinel(key) ..
+			", assigned value type was " .. type_sentinel(value))
+	end,
+	__call = function(sentinel, ...)
+		assert(is_sentinel[sentinel])
+		error(msg_call .. "sentinel type was " .. get_label(sentinel) ..
+			", number of args was " .. select("#", ...))
+	end,
+	__metatable = false,
+	__tostring = function(sentinel)
+		-- the tostring op is special in that we want this to work.
+		assert(is_sentinel[sentinel])
+		return get_label(sentinel)
+	end,
+}
 
 local meta = {}
-for _, op in ipairs(refuse_ops) do
+for _, op in ipairs(refuse_binary_ops) do
 	local ev = "__" .. op
-	meta[ev] = mk_exploding_op(op)
+	meta[ev] = mk_binary_op(op)
 end
+for _, op in ipairs(refuse_unary_ops) do
+	local ev = "__" .. op
+	meta[ev] = mk_unary_op(op)
+end
+for ev, method in pairs(extra_ops) do
+	meta[ev] = method
+end
+
+
 
 
 
@@ -150,7 +193,8 @@ local construct = function(label)
 
 	local s = {}
 	s[sentinel_label_key] = get_mangled_label(label)
-	return s
+	is_sentinel[s] = true
+	return setmetatable(s, meta)
 end
 i.mk = construct
 
