@@ -52,6 +52,18 @@ e({"table"}, "bad_key_value")
 
 
 --[[
+Errors associated with user-defined types (typically represented as tables).
+Mostly some sense of "tried to call an operation not supported by this type";
+in other words what would have been caught at compile time in static typed langs.
+]]
+err.struct = {}
+-- tried to call a primitive operator on a type that didn't make sense
+-- (e.g. metatable overriden but say adding isn't logical for this type)
+e({"struct"}, "bad_operator")
+
+
+
+--[[
 Registration errors.
 Many mods have some sort of mechanism to register callbacks or handlers
 which are called in response to certain classes of events.
