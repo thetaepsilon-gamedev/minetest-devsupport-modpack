@@ -1,4 +1,9 @@
 --[[
+READ THIS FIRST:
+if exposing sentinels via modns,
+please return it from an accessor function,
+else modns will attempt to deep copy it.
+
 There are times when we would like to return a special sentinel value from a function.
 This sentinel should be considered distinct from other possible values;
 let's say we want to return a special value indicating the end of a list,
@@ -124,7 +129,7 @@ local refuse_binary_ops = {
 }
 local refuse_unary_ops = {
 	"unm",
-	"len",
+	-- we can't override length it seems...
 	-- call is somewhat special, it diagnoses # of arguments
 }
 
