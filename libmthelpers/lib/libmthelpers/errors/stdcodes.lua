@@ -60,6 +60,9 @@ err.struct = {}
 -- tried to call a primitive operator on a type that didn't make sense
 -- (e.g. metatable overriden but say adding isn't logical for this type)
 e({"struct"}, "bad_operator")
+-- unallowed accesses or modifications of keys (usually trapped by metatables)
+e({"struct"}, "bad_key_access")
+e({"struct"}, "bad_key_write")
 
 
 
