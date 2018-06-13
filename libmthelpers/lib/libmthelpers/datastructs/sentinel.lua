@@ -86,6 +86,12 @@ local type_sentinel = function(v)
 	return is_sentinel[v] and get_label(v) or type(v)
 end
 
+-- describe operands for binary operation errors.
+local describe_binary = function(opr1, opr2)
+	return "lhs " .. type_sentinel(opr1) ..
+		" and rhs " .. type_sentinel(opr2)
+end
+
 
 
 
@@ -99,18 +105,18 @@ local err =
 local badop = err.struct.bad_operator
 local mk_binary_op = function(label)
 	local msg = badop .. " attempted to use binary " .. label ..
-		" operator on sentinel object"
+		" operator on sentinel object, argument types were "
 
 	return function(opr1, opr2)
-		error(msg)
+		error(msg .. describe_binary(opr1, opr2))
 	end
 end
 local mk_unary_op = function(label)
 	local msg = badop .. " attempted to use unary " .. label ..
-		" operator on sentinel object"
+		" operator on sentinel object, argument type was"
 
 	return function(operand)
-		error(msg)
+		error(msg .. type_sentinel(operand))
 	end
 end
 
