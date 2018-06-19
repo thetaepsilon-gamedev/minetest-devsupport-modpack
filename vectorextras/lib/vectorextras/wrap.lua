@@ -14,3 +14,5 @@ local wrap = function(_x, _y, _z)
 	}
 end
 
+return wrap
+
