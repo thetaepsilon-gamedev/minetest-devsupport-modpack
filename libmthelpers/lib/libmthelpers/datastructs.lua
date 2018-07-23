@@ -34,6 +34,7 @@ local base = "com.github.thetaepsilon.minetest.libmthelpers.datastructs."
 datastructs.guardedmap = mtrequire(base.."guardedmap")
 datastructs.matrix = mtrequire(base.."matrix")
 datastructs.handler_lut = mtrequire(base.."handler_lut")
+datastructs.regtable = mtrequire(base.."regtable")
 
 
 
