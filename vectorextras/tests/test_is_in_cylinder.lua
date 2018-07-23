@@ -46,3 +46,19 @@ accept(-0.5, 1, -0.5)
 reject(1.0, 1, 1.0)
 reject(-1, 1, -1)
 
+
+
+-- now test some more diagonal pointing cylinders, offset from origin.
+local accept, reject = mkbounds(1, 1, 1, 2, 2, 2, 1)
+accept(1, 1, 1)
+-- argh, rounding errors strike again
+accept(1.99, 1.99, 1.99)
+accept(1.5, 1.5, 1.5)
+reject(2.1, 2.1, 2.1)
+-- just to show this isn't the same as above...
+reject(0, 0, 0)
+reject(0, 1, 0)
+
+accept(2, 1.5, 1.5)
+reject(3, 1.5, 1.5)
+
