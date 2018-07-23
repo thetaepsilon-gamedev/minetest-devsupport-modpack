@@ -32,9 +32,11 @@ local mk_reflect_raw_ = function(opts)
 	assert(type(rv) == "number")
 
 	return function(ox, oy, oz, nx, ny, nz)
-		local scale = rv * dotproduct(ox, oy, oz, nx, ny, nz)
+		local amount = dotproduct(ox, oy, oz, nx, ny, nz)
+		local scale = rv * amount
 		local bx, by, bz = scalar_mult(scale, nx, ny, nz)
-		return vector_add(ox, oy, oz, bx, by, bz)
+		local rx, ry, rz = vector_add(ox, oy, oz, bx, by, bz)
+		return rx, ry, rz
 	end
 end
 i.mk_reflect_raw_ = mk_reflect_raw_
