@@ -25,18 +25,23 @@ local vector_add = m_add.raw
 local i = {}
 -- note: the surface normal, funnily enough, must be normalised!
 -- typically it is pre-computed ahead of time, but bear the above in mind.
+local retn = function(x, y, z, a) return x, y, z end
+local reta = function(x, y, z, a) return x, y, z, a end
 local mk_reflect_raw_ = function(opts)
 	opts = opts or {}
 	assert(type(opts) == "table")
 	local rv = opts.reflectivity or -2
 	assert(type(rv) == "number")
+	-- allow requesting that the amount of the normal vector in input is returned.
+	-- this can be useful as e.g. a height in terms of the normal vector.
+	local ret = opts.getdot and reta or retn
 
 	return function(ox, oy, oz, nx, ny, nz)
 		local amount = dotproduct(ox, oy, oz, nx, ny, nz)
 		local scale = rv * amount
 		local bx, by, bz = scalar_mult(scale, nx, ny, nz)
 		local rx, ry, rz = vector_add(ox, oy, oz, bx, by, bz)
-		return rx, ry, rz
+		return ret(rx, ry, rz, amount)
 	end
 end
 i.mk_reflect_raw_ = mk_reflect_raw_
