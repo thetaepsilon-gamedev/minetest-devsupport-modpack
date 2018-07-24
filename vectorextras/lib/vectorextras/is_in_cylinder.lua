@@ -25,10 +25,9 @@ local dist2 = m_len.squared_raw
 local flatten = m_reflect.mk_reflect_raw_({getdot=true,reflectivity=-1})
 
 local i = {}
-local cylinder_test_raw = function(ax, ay, az, _bx, _by, _bz, radius, _px, _py, _pz)
+-- core version which uses an offset from the base point A.
+local cylinder_test_offset = function(ax, ay, az, dx, dy, dz, radius, _px, _py, _pz)
 	-- firstly, we rebase the coordinates to be relative to A.
-	-- this way, the length is implict in B, and makes it easier to work with P.
-	local dx, dy, dz = sub(_bx, _by, _bz, ax, ay, az)
 	local px, py, pz = sub(_px, _py, _pz, ax, ay, az)
 
 	-- next, get normalised vector and length for use in reflect.
@@ -51,7 +50,15 @@ local cylinder_test_raw = function(ax, ay, az, _bx, _by, _bz, radius, _px, _py, 
 	-- otherwise we should be good
 	return true
 end
-i.raw = cylinder_test_raw
+i.raw_offset = cylinder_test_offset
+
+-- variant which uses an absolute secondary position -
+-- this takes care of computing the offset.
+local cylinder_test_abs = function(ax, ay, az, _bx, _by, _bz, radius, _px, _py, _pz)
+	local dx, dy, dz = sub(_bx, _by, _bz, ax, ay, az)
+	return cylinder_test_offset(ax, ay, az, dx, dy, dz, radius, _px, _py, _pz)
+end
+i.raw = cylinder_test_abs
 
 
 
