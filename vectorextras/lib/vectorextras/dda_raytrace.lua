@@ -82,6 +82,10 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local psx = _psx % 1.0
 	local psy = _psy % 1.0
 	local psz = _psz % 1.0
+	-- save point integer bits for later
+	local pix = _psx - psx
+	local piy = _psy - psy
+	local piz = _psz - psz
 
 	-- get the distances remaining to the next whole node on each axis,
 	-- scaling them by their ray velocity -
@@ -111,12 +115,49 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local ddy = sdy * tmoved
 	local ddz = sdz * tmoved
 
-	local prx = psx + ddx
-	local pry = psy + ddy
-	local prz = psz + ddz
+	-- also re-add the base node we chopped off here earlier
+	local prx = psx + ddx + pix
+	local pry = psy + ddy + piy
+	local prz = psz + ddz + piz
 	return prx, pry, prz, tmoved
 end
 i.step_ray = step_ray
+
+
+
+-- iterate through boundary positions along a ray's path.
+-- will stop when tmax has been "consumed" by ray steps.
+-- arguments are the same as for step_ray.
+local iterate = function(px, py, pz, sdx, sdy, sdz, tremain)
+	-- somewhat annoyingly, lua only passes the first returned arg to the iterator function
+	local it = function()
+		if tremain <= 0 then return nil, nil, nil, nil end
+		local tconsumed
+		px, py, pz, tconsumed = step_ray(px, py, pz, sdx, sdy, sdz, tremain)
+		tremain = tremain - tconsumed
+		return px, py, pz, tremain
+	end
+	return it
+end
+i.iterate_ray = iterate
+
+-- same but wrapped
+local b = "ds2.minetest.vectorextras."
+local wrap = mtrequire(b.."wrap")
+local unwrap = mtrequire(b.."unwrap")
+local iterate_wrapped = function(pos, direction, tremain)
+	local px, py, pz = unwrap(pos)
+	local sdx, sdy, sdz = unwrap(direction)
+	local it = function()
+		if tremain <= 0 then return nil, nil end
+		local tconsumed
+		px, py, pz, tconsumed = step_ray(px, py, pz, sdx, sdy, sdz, tremain)
+		tremain = tremain - tconsumed
+		return wrap(px, py, pz)
+	end
+	return it
+end
+i.iterate_ray_wrapped = iterate_wrapped
 
 
 
