@@ -6,6 +6,10 @@ This is done by looking at the distance to the next boundary in each dimension,
 looking for the shortest one, and moving the entire ray by that shortest one.
 ]]
 
+local ydebug = function(...) print("# [raytrace]", ...) end
+local ndebug = function() end
+local debug = ndebug
+
 
 
 local infinity = 1 / 0
@@ -99,6 +103,7 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	-- however, we shouldn't get infinity as long as one of the ray components is non-zero.
 	local trshortest = min(trx, min(try, trz))
 	assert(trshortest ~= infinity)
+	debug("trshortest", trshortest)
 
 	-- the optional tmax parameter to this function
 	-- can optionally be used to specify a time limit.
@@ -106,7 +111,9 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	-- the ray is only moved proportional to tmax.
 	-- this could be used to e.g. specify dtime limits for an entity's ray.
 	tmax = tmax or infinity
+	debug("tmax", tmax)
 	local tmoved = math.min(trshortest, tmax)
+	debug("tmoved", tmoved)
 
 	-- scale the ray velocity vector by movement time, giving a distance.
 	-- this when added to the starting point will yield a point,
@@ -119,6 +126,7 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local prx = psx + ddx + pix
 	local pry = psy + ddy + piy
 	local prz = psz + ddz + piz
+	debug("point result", prx, pry, prz)
 	return prx, pry, prz, tmoved
 end
 i.step_ray = step_ray
