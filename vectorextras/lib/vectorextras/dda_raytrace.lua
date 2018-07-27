@@ -152,7 +152,7 @@ local iterate = function(px, py, pz, sdx, sdy, sdz, tremain)
 	-- somewhat annoyingly, lua only passes the first returned arg to the iterator function
 	local it = function()
 		if tremain <= 0 then return nil, nil, nil, nil end
-		local tconsumed
+		local tconsumed, btx, bty, btz
 		px, py, pz, tconsumed, btx, bty, btz =
 			step_ray(px, py, pz, sdx, sdy, sdz, tremain)
 		tremain = tremain - tconsumed
