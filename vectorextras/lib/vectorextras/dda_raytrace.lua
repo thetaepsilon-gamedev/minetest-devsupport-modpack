@@ -76,7 +76,8 @@ parameters:
 * sd* (speed direction) are the components of the ray's movement vector.
 * tmax is a "maximum time" the ray can move (see comment in function)
 returns:
-three components of new position, consumed "time" to move ray
+three components of new position, consumed "time" to move ray,
+three booleans which indicate which side(s) were traversed.
 ]]
 local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	assert((sdx ~= 0) or (sdy ~= 0) or (sdz ~= 0), "this ray will never move!")
@@ -127,12 +128,18 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local pry = psy + ddy
 	local prz = psz + ddz
 	debug("point result (voxel relative)", prx, pry, prz)
+
+	-- check which dimensions ended up on a boundary - boolean traversed
+	local btx = (prx % 1.0) == 0
+	local bty = (pry % 1.0) == 0
+	local btz = (prz % 1.0) == 0
+
 	-- also re-add the base node we chopped off here earlier
 	local pwx = prx + pix
 	local pwy = pry + piy
 	local pwz = prz + piz
 	debug("point world result", pwx, pwy, pwz)
-	return pwx, pwy, pwz, tmoved
+	return pwx, pwy, pwz, tmoved, btx, bty, btz
 end
 i.step_ray = step_ray
 
@@ -146,9 +153,10 @@ local iterate = function(px, py, pz, sdx, sdy, sdz, tremain)
 	local it = function()
 		if tremain <= 0 then return nil, nil, nil, nil end
 		local tconsumed
-		px, py, pz, tconsumed = step_ray(px, py, pz, sdx, sdy, sdz, tremain)
+		px, py, pz, tconsumed, btx, bty, btz =
+			step_ray(px, py, pz, sdx, sdy, sdz, tremain)
 		tremain = tremain - tconsumed
-		return px, py, pz, tremain
+		return px, py, pz, tremain, btx, bty, btz
 	end
 	return it
 end
