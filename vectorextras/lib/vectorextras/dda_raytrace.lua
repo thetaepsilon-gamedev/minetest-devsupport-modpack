@@ -150,6 +150,7 @@ i.step_ray = step_ray
 -- will stop when tmax has been "consumed" by ray steps.
 -- arguments are the same as for step_ray.
 local iterate = function(px, py, pz, sdx, sdy, sdz, tremain)
+	tremain = tremain or infinity
 	-- somewhat annoyingly, lua only passes the first returned arg to the iterator function
 	local it = function()
 		if tremain <= 0 then return nil, nil, nil, nil end
@@ -170,6 +171,7 @@ local unwrap = mtrequire(b.."unwrap")
 local iterate_wrapped = function(pos, direction, tremain)
 	local px, py, pz = unwrap(pos)
 	local sdx, sdy, sdz = unwrap(direction)
+	tremain = tremain or infinity
 	local it = function()
 		if tremain <= 0 then return nil, nil end
 		local tconsumed
