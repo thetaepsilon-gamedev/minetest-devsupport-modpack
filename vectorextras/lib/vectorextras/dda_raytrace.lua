@@ -122,12 +122,17 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local ddy = sdy * tmoved
 	local ddz = sdz * tmoved
 
+	-- result coords relative to cube
+	local prx = psx + ddx
+	local pry = psy + ddy
+	local prz = psz + ddz
+	debug("point result (voxel relative)", prx, pry, prz)
 	-- also re-add the base node we chopped off here earlier
-	local prx = psx + ddx + pix
-	local pry = psy + ddy + piy
-	local prz = psz + ddz + piz
-	debug("point result", prx, pry, prz)
-	return prx, pry, prz, tmoved
+	local pwx = prx + pix
+	local pwy = pry + piy
+	local pwz = prz + piz
+	debug("point world result", pwx, pwy, pwz)
+	return pwx, pwy, pwz, tmoved
 end
 i.step_ray = step_ray
 
