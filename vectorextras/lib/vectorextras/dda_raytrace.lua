@@ -79,6 +79,7 @@ returns:
 three components of new position, consumed "time" to move ray,
 three booleans which indicate which side(s) were traversed.
 ]]
+local abs = math.abs
 local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	assert((sdx ~= 0) or (sdy ~= 0) or (sdz ~= 0), "this ray will never move!")
 
@@ -96,9 +97,9 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	-- scaling them by their ray velocity -
 	-- this will make dimensions with higher velocity more favourable.
 	-- (NB this technically returns a time remaining: time = distance / speed)
-	local trx = d1di(psx, sdx) / sdx
-	local try = d1di(psy, sdy) / sdy
-	local trz = d1di(psz, sdz) / sdz
+	local trx = d1di(psx, sdx) / abs(sdx)
+	local try = d1di(psy, sdy) / abs(sdy)
+	local trz = d1di(psz, sdz) / abs(sdz)
 	-- get the mininum side's time remaining.
 	-- note that not-moving dimensions will end up with time remaining = infinity.
 	-- however, we shouldn't get infinity as long as one of the ray components is non-zero.
