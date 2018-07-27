@@ -63,12 +63,17 @@ local center = function(x)
 end
 coords.round_axis_to_node = center
 
+local center_on_node_raw = function(x, y, z)
+	local rx = center(x)
+	local ry = center(y)
+	local rz = center(z)
+	return rx, ry, rz
+end
+coords.round_to_node_raw = center_on_node_raw
+
 local center_on_node = function(v)
-	local result = {}
-	result.x = center(v.x)
-	result.y = center(v.y)
-	result.z = center(v.z)
-	return result
+	local rx, ry, rz = center_on_node_raw(v.x, v.y, v.z)
+	return {x=rx,y=ry,z=rz}
 end
 coords.round_to_node = center_on_node
 
