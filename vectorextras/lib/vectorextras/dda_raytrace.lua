@@ -131,9 +131,11 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	debug("point result (voxel relative)", prx, pry, prz)
 
 	-- check which dimensions ended up on a boundary - boolean traversed
-	local btx = (prx % 1.0) == 0
-	local bty = (pry % 1.0) == 0
-	local btz = (prz % 1.0) == 0
+	-- we work this out by seeing which sides equalled trshortest,
+	-- to avoid problems caused by rounding errors.
+	local btx = trx == trshortest
+	local bty = try == trshortest
+	local btz = trz == trshortest
 
 	-- also re-add the base node we chopped off here earlier
 	local pwx = prx + pix
