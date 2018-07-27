@@ -100,6 +100,7 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	local trx = d1di(psx, sdx) / abs(sdx)
 	local try = d1di(psy, sdy) / abs(sdy)
 	local trz = d1di(psz, sdz) / abs(sdz)
+	debug("time remaining", trx, try, trz)
 	-- get the mininum side's time remaining.
 	-- note that not-moving dimensions will end up with time remaining = infinity.
 	-- however, we shouldn't get infinity as long as one of the ray components is non-zero.
@@ -131,11 +132,12 @@ local step_ray = function(_psx, _psy, _psz, sdx, sdy, sdz, tmax)
 	debug("point result (voxel relative)", prx, pry, prz)
 
 	-- check which dimensions ended up on a boundary - boolean traversed
-	-- we work this out by seeing which sides equalled trshortest,
+	-- we work this out by seeing which sides equalled tmoved,
 	-- to avoid problems caused by rounding errors.
-	local btx = trx == trshortest
-	local bty = try == trshortest
-	local btz = trz == trshortest
+	local btx = trx == tmoved
+	local bty = try == tmoved
+	local btz = trz == tmoved
+	debug("boolean traversed", btx, bty, btz)
 
 	-- also re-add the base node we chopped off here earlier
 	local pwx = prx + pix
