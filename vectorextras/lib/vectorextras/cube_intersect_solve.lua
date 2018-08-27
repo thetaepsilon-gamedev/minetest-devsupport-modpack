@@ -130,8 +130,8 @@ end
 
 -- now try all three axes and return the first successful one;
 -- if none are found, returns nil.
--- test_all_faces :: Num n => Vec3 n -> Vec3 n -> Vec3 n -> Maybe Vec3 n
-local test_all_faces = function(px, py, pz, lx, ly, lz, wx, wy, wz)
+-- test_all_faces_centered :: Num n => Vec3 n -> Vec3 n -> Vec3 n -> Maybe Vec3 n
+local test_all_faces_centered = function(px, py, pz, lx, ly, lz, wx, wy, wz)
 	for _, dim in ipairs(dims) do
 		local cxf, bxf = dim[1], dim[2]
 		local rx, ry, rz =	
@@ -142,7 +142,7 @@ local test_all_faces = function(px, py, pz, lx, ly, lz, wx, wy, wz)
 	end
 	return nil, nil, nil
 end
-i.test_all_faces_raw = test_all_faces
+i.test_all_faces_centered_raw = test_all_faces
 
 
 
