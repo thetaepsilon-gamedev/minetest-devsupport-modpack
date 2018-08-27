@@ -76,9 +76,9 @@ local bxf_y = function(x, y, z) return z, x end
 local bxf_z = function(x, y, z) return x, y end
 
 local dims = {
-	{cxf_x, bxf_x},
-	{cxf_y, bxf_y},
-	{cxf_z, bxf_z},
+	{cxf_x, bxf_x, "x"},
+	{cxf_y, bxf_y, "y"},
+	{cxf_z, bxf_z, "z"},
 }
 
 
@@ -94,14 +94,18 @@ cxf: extractor for axis again.
 bxf: a function which extracts the *other two* of the axes.
 	this is used to check whether the solved coordinates lie on the face.
 	ordering of the axes isn't important, as long as it is consistent.
-returns: found coordinates or nil
+returns: found coordinates and the sign of the face;
+	or nil if no intersection is possible.
 
 data BoundsExtract n :: Vec3 n -> (n, n)
+-- note enums indicated by strings
+data Sign :: "+" | "-"
 find_face_intersection :: Num n => Vec3 n -> Vec3 n -> Vec3 n -> \
-			AxisExtract n -> BoundsExtract n -> Maybe Vec3 n
+			AxisExtract n -> BoundsExtract n -> Maybe (Vec3 n, Sign)
 ]]
 local abs = math.abs
 local sign = function(v) return v < 0 and -1 or 1 end
+local signe = function(v) return v < 0 and "-" or "+" end
 local find_face_intersection = function(px, py, pz, lx, ly, lz, wx, wy, wz, cxf, bxf)
 	-- get the current width and origin position in this axis.
 	local cp = cxf(px, py, pz)
@@ -114,6 +118,7 @@ local find_face_intersection = function(px, py, pz, lx, ly, lz, wx, wy, wz, cxf,
 
 	-- make sure that ct gets the correct sign based on our position.
 	local ct = sign(cp) * cw
+	local enum_sign = signe(cp)
 	local rx, ry, rz =
 		solve_target_coordinates(px, py, pz, lx, ly, lz, cxf, ct)
 
@@ -124,24 +129,26 @@ local find_face_intersection = function(px, py, pz, lx, ly, lz, wx, wy, wz, cxf,
 	if (vr < -vw) or (vr > vw) then return nil, nil, nil end
 
 	-- otherwise we should be good to go
-	return rx, ry, rz
+	return rx, ry, rz, enum_sign
 end
 
 
 
 -- now try all three axes and return the first successful one;
 -- if none are found, returns nil.
--- test_all_faces_centered :: Num n => Vec3 n -> Vec3 n -> Vec3 n -> Maybe Vec3 n
+-- data Face = "x" | "y" | "z"
+-- test_all_faces_centered :: Num n => \
+--	Vec3 n -> Vec3 n -> Vec3 n -> Maybe (Vec3 n, Sign, Face)
 local test_all_faces_centered = function(px, py, pz, lx, ly, lz, wx, wy, wz)
 	for _, dim in ipairs(dims) do
 		local cxf, bxf = dim[1], dim[2]
-		local rx, ry, rz =	
+		local rx, ry, rz, es =
 			find_face_intersection(
 				px, py, pz, lx, ly, lz, wx, wy, wz, cxf, bxf)
 
-		if rx then return rx, ry, rz end
+		if rx then return rx, ry, rz, es, dim[3] end
 	end
-	return nil, nil, nil
+	return nil, nil, nil, nil, nil
 end
 i.test_all_faces_centered_raw = test_all_faces
 
@@ -163,13 +170,14 @@ local solve_ws = function(cx, cy, cz, lx, ly, lz, ex, ey, ez, wx, wy, wz)
 	-- the entity is already at zero relative to itself
 	-- (ex - ex = 0), so just rebase clicker
 	local px, py, pz = vsub(cx, cy, cz, ex, ey, ez)
-	local rx, ry, rz =
+	local rx, ry, rz, es, ef =
 		test_all_faces_centered(px, py, pz, lx, ly, lz, wx, wy, wz)
 
 	if rx == nil then return nil, nil, nil end
 
 	-- rebase to be relative to entity in world space again
-	return vadd(rx, ry, rz, ex, ey, ez)
+	local fx, fy, fz = vadd(rx, ry, rz, ex, ey, ez)
+	return fx, fy, fz, es, ef
 end
 i.solve_ws_raw = solve_ws
 
