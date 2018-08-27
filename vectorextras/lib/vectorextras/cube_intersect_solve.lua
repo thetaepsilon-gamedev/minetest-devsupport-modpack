@@ -11,6 +11,7 @@ and see if the vector intersects with any of them.
 local pre = "ds2.minetest.vectorextras."
 local vmult = mtrequire(pre.."scalar_multiply").raw
 local vadd = mtrequire(pre.."add").raw
+local vsub = mtrequire(pre.."subtract").raw
 
 
 
@@ -143,6 +144,34 @@ local test_all_faces_centered = function(px, py, pz, lx, ly, lz, wx, wy, wz)
 	return nil, nil, nil
 end
 i.test_all_faces_centered_raw = test_all_faces
+
+
+
+--[[
+now we take care of rebasing the coordinate system,
+given the *world* position of the entity and click origin.
+the returned coordinates (if any) will also be in world space.
+args:
+cx, cy, cz: clicker origin
+lx, ly, lz: look vector from clicker origin
+ex, ey, ez: center of the cuboid
+wx, wy, wz: dimensions of cuboid
+returns: surface position in world space, or nil.
+]]
+-- solve_ws :: Num n => Vec3 n -> Vec3 n -> Vec3 n -> Vec3 n -> Maybe Vec3 n
+local solve_ws = function(cx, cy, cz, lx, ly, lz, ex, ey, ez, wx, wy, wz)
+	-- the entity is already at zero relative to itself
+	-- (ex - ex = 0), so just rebase clicker
+	local px, py, pz = vsub(cx, cy, cz, ex, ey, ez)
+	local rx, ry, rz =
+		test_all_faces_centered(px, py, pz, lx, ly, lz, wx, wy, wz)
+
+	if rx == nil then return nil, nil, nil end
+
+	-- rebase to be relative to entity in world space again
+	return vadd(rx, ry, rz, ex, ey, ez)
+end
+i.solve_ws_raw = solve_ws
 
 
 
