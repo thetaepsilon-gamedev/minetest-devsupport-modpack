@@ -183,5 +183,20 @@ i.solve_ws_raw = solve_ws
 
 
 
+-- the enums for sign and axis are just strings;
+-- if we concat them we end up with a unique face string, e.g. "+y".
+-- this table contains unit vectors in those directions.
+local offsets = {
+	["+x"] = {	x=1,	y=0,	z=0 	},
+	["-x"] = {	x=-1,	y=0,	z=0	},
+	["+y"] = {	x=0,	y=1,	z=0	},
+	["-y"] = {	x=0,	y=-1,	z=0	},
+	["+z"] = {	x=0,	y=0,	z=1	},
+	["-z"] = {	x=0,	y=0,	z=-1	},
+}
+i.enum_offsets = offsets
+
+
+
 return i
 

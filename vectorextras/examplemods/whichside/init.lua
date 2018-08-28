@@ -8,7 +8,8 @@ local wrap = mtrequire(pv.."wrap")
 local vmult = mtrequire(pv.."scalar_multiply").raw
 local vadd = mtrequire(pv.."add").raw
 --local whichside = mtrequire(pv.."which_side").raw
-local solve = mtrequire(pv.."cube_intersect_solve").solve_ws_raw
+local m_solve = mtrequire(pv.."cube_intersect_solve")
+local solve = m_solve.solve_ws_raw
 
 -- particle effects to indicate the detected face.
 local m_particles = modtable("ds2.minetest.particleeffects")
@@ -30,14 +31,7 @@ local head = 1.625
 local w = 0.5
 local prn = minetest.chat_send_all
 local vec3 = vector.new
-local offsets = {
-	["x+"] = vec3(1, 0, 0),
-	["x-"] = vec3(-1, 0, 0),
-	["y+"] = vec3(0, 1, 0),
-	["y-"] = vec3(0, -1, 0),
-	["z+"] = vec3(0, 0, 1),
-	["z-"] = vec3(0, 0, -1),
-}
+local offsets = m_solve.enum_offsets
 on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 	if clicker:is_player() then
 		local ex, ey, ez = unwrap(pos)
@@ -52,7 +46,7 @@ on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 		if rx == nil then return end
 
 		fire_particles(wrap(rx, ry, rz))
-		local face = ef..es
+		local face = es..ef
 		prn("face: "..face)
 
 		local offset = offsets[face]
