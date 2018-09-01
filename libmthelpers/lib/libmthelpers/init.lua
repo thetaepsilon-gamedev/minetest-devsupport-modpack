@@ -15,6 +15,7 @@ local components = {
 	"profiling",
 	"errors",
 	"testing",
+	"strutil",
 }
 
 
