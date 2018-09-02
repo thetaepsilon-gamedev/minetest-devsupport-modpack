@@ -35,6 +35,7 @@ datastructs.guardedmap = mtrequire(base.."guardedmap")
 datastructs.matrix = mtrequire(base.."matrix")
 datastructs.handler_lut = mtrequire(base.."handler_lut")
 datastructs.regtable = mtrequire(base.."regtable")
+datastructs.proxy = mtrequire(base.."proxy")
 
 
 
