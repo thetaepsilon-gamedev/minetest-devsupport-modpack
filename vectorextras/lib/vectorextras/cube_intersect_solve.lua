@@ -150,7 +150,7 @@ local test_all_faces_centered = function(px, py, pz, lx, ly, lz, wx, wy, wz)
 	end
 	return nil, nil, nil, nil, nil
 end
-i.test_all_faces_centered_raw = test_all_faces
+i.test_all_faces_centered_raw = test_all_faces_centered
 
 
 
