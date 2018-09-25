@@ -91,6 +91,18 @@ other times negative numbers don't make sense.
 err.numeric = {}
 e({"numeric"}, "expected_integer")
 e({"numeric"}, "expected_positive_or_zero")
+-- one could also argue this is a type property of sorts;
+-- in that the *type* of the numbers are supposed to be e.g. integer, natural etc.
+-- for instance: the type of natural numbers (with or without zero, as needed).
+-- the distinction doesn't matter all that much in a dynamic language
+-- (if you excuse the fact that type() won't tell apart these categories).
+err.args.expected_t.numeric = {}
+e({"args", "expected_t", "numeric"}, "integer")
+-- please, mathematicians, no arguments!
+-- I'm not here to decide whether 0 ∈ ℕ or not,
+-- I just need labels for these things
+e({"args", "expected_t", "numeric"}, "natural_nz")	-- ℕ*, "non-zero"
+e({"args", "expected_t", "numeric"}, "natural_or_zero")	-- ℕ⁰
 
 
 
