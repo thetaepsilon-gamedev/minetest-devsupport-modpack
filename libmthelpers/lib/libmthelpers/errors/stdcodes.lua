@@ -82,5 +82,17 @@ e({"register"}, "duplicate")
 
 
 
+--[[
+Errors related to number type arguments.
+Because of lua's insistance on a single number type,
+we often can get a float when we only wanted an int;
+other times negative numbers don't make sense.
+]]
+err.numeric = {}
+e({"numeric"}, "expected_integer")
+e({"numeric"}, "expected_positive_or_zero")
+
+
+
 return err
 
