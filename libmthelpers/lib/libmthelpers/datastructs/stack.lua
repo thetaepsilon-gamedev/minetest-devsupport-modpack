@@ -6,6 +6,12 @@ local i = {}
 local lib = "com.github.thetaepsilon.minetest.libmthelpers"
 local stdcodes = mtrequire(lib..".errors.stdcodes")
 local naterr = stdcodes.args.expected_t.numeric.natural_or_zero
+local sentinel = mtrequire(lib..".datastructs.sentinel")
+
+local empty = sentinel.mk("libmthelpers.datastructs.stack.empty")
+i.empty = function() return empty end
+
+
 
 local base = " stack.new(): "
 local eb = naterr..base.."expected non-negative integer length, "
@@ -59,10 +65,24 @@ local new = function(length)
 
 	local size = function() return length end
 
+	-- popping is a little more complicated because stacks can store nil.
+	-- here a SENTINEL value is used, namely the empty sentinel above.
+	local pop = function()
+		if length == 0 then
+			return empty
+		end
+
+		assert(length > 0)
+		local e = table[length]
+		length = length - 1
+		return e
+	end
+
 	return {
 		push = push,
 		ipairs = ipairs,
 		size = size,
+		pop = pop,
 	}
 end
 i.new = new

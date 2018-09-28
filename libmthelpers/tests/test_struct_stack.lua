@@ -95,6 +95,7 @@ local check_push = function(base_elements)
 				"mis-match between original and retrieved element")
 		end
 	end
+	return vec
 end
 
 check_push({43,6,4,7,3,45,565,3464,6572})
@@ -148,6 +149,27 @@ for i, f in fstack.ipairs() do
 	local r = f(10, 4)
 	assert(r == 6)
 end
+
+
+
+
+
+-- test popping.
+local empty = stack.empty()
+local check_empty = function(s)
+	assert(s.pop() == empty, "stack was expected to be empty")
+end
+check_empty(n())
+
+local msg = "popped element didn't match expected"
+local check_pop = function(base_elements)
+	local s = check_push(base_elements)
+	local n = #base_elements
+	for i = n, 1, -1 do
+		assert(s.pop() == base_elements[i], msg)
+	end
+end
+check_pop({34,56,false,{},"abc"})
 
 
 
