@@ -3,7 +3,7 @@ local mk_helpers = function(loader)
 
 
 local dname = "mk_parent_ns_noauto() "
-local mk_parent_ns_noauto = function(list, base, sep)
+local mk_parent_ns_noauto_inner = function(list, base, sep)
 	local result = {}
 	for _, sub in ipairs(list) do
 		local subpath = base..sep..sub
@@ -12,13 +12,18 @@ local mk_parent_ns_noauto = function(list, base, sep)
 	return result
 end
 
+-- separation ready for an imminent refactor
+local mk_parent_ns_noauto = function(list, base, sep)
+	return mk_parent_ns_noauto_inner(list, base, sep)
+end
+
 local dname = "mk_parent_ns() "
 local mk_parent_ns = function(list)
 	local inflight, ptype = loader:get_current_inflight()
 	if not inflight then error(dname.."must be invoked via dynamic loading of another file") end
 	local sep = ptype.pathsep
 	if not sep then error(dname.."auto path deduction failure: path type "..ptype.label.." doesn't support separator concatenation") end
-	return mk_parent_ns_noauto(list, inflight, sep)
+	return mk_parent_ns_noauto_inner(list, inflight, sep)
 end
 
 return {
