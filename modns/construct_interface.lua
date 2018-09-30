@@ -8,7 +8,6 @@ return function(loader)
 	local modns = {
 		get = mtrequire,
 		mk_parent_ns = nsauto.ns,
-		mk_parent_ns_noauto = nsauto.ns_noauto,
 	}
 
 	return modns

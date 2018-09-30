@@ -12,11 +12,6 @@ local mk_parent_ns_noauto_inner = function(list, base, sep)
 	return result
 end
 
--- separation ready for an imminent refactor
-local mk_parent_ns_noauto = function(list, base, sep)
-	return mk_parent_ns_noauto_inner(list, base, sep)
-end
-
 local dname = "mk_parent_ns() "
 local mk_parent_ns = function(list)
 	local inflight, ptype = loader:get_current_inflight()
@@ -28,7 +23,6 @@ end
 
 return {
 	ns = mk_parent_ns,
-	ns_noauto = mk_parent_ns_noauto,
 }
 
 
