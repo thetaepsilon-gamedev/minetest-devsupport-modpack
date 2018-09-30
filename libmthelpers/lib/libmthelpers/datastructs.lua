@@ -37,6 +37,7 @@ datastructs.matrix = subloader("matrix")
 datastructs.handler_lut = subloader("handler_lut")
 datastructs.regtable = subloader("regtable")
 datastructs.proxy = subloader("proxy")
+datastructs.sentinel = subloader("sentinel")
 
 
 
