@@ -9,6 +9,7 @@ return function(loader)
 		get = mtrequire,
 		mk_parent_ns = nsauto.ns,
 		create_subloader = nsauto.create_subloader,
+		get_child_subloader = nsauto.get_child_subloader,
 	}
 
 	return modns

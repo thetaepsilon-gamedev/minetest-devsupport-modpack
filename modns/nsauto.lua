@@ -3,7 +3,10 @@ local mk_helpers = function(loader)
 
 
 
+-- manual and automatic capture subloaders
 local create_subloader = (dofile(_modpath.."subloader.lua"))(loader)
+local p = _modpath.."subloader_child_modules.lua"
+local get_child_subloader = (dofile(p))(loader, create_subloader)
 
 
 
@@ -29,6 +32,7 @@ end
 return {
 	ns = mk_parent_ns,
 	create_subloader = create_subloader,
+	get_child_subloader = get_child_subloader,
 }
 
 
