@@ -30,8 +30,7 @@ datastructs.new.set = tsi.mk_unique
 
 
 -- other structures, see their respective files
-local base = "com.github.thetaepsilon.minetest.libmthelpers.datastructs"
-local subloader = modns.create_subloader(base, ".")
+local subloader = modns.get_child_subloader()
 datastructs.guardedmap = subloader("guardedmap")
 datastructs.matrix = subloader("matrix")
 datastructs.handler_lut = subloader("handler_lut")
