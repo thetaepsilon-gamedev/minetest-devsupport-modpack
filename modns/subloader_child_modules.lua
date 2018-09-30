@@ -20,7 +20,8 @@ local setup = function(loader, create_subloader)
 	local get_child_subloader = function()
 		local inflight, ptype = loader:get_current_inflight()
 		if not inflight then
-			error(msg_notloaded) end
+			error(msg_notloaded)
+		end
 		local sep = ptype.pathsep
 		if not sep then
 			error(msg_sep_pre .. ptype.label .. msg_sep_post)
