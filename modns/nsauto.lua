@@ -2,6 +2,11 @@
 local mk_helpers = function(loader)
 
 
+
+local create_subloader = (dofile(_modpath.."subloader.lua"))(loader)
+
+
+
 local dname = "mk_parent_ns_noauto() "
 local mk_parent_ns_noauto_inner = function(list, base, sep)
 	local result = {}
@@ -23,6 +28,7 @@ end
 
 return {
 	ns = mk_parent_ns,
+	create_subloader = create_subloader,
 }
 
 
