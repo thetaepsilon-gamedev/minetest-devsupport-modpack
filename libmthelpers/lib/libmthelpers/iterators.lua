@@ -82,4 +82,10 @@ iterators.iterate_once = iterate_once
 
 
 
+-- other bits, see appropriate files in iterators/ directory
+local subloader = modns.get_child_subloader()
+iterators.pairs_noref = subloader("pairs_noref")
+
+
+
 return iterators
