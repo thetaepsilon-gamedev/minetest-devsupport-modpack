@@ -168,6 +168,9 @@ end
 local ev_cachehit = evprefix.."cache_hit"
 local ev_cachemiss = evprefix.."cache_miss"
 local getcomponent_nocopy = function(self, pathstring)
+	--print("# path", pathstring)
+	--print("# inflight", self.loadstate.current)
+
 	-- objects are only added to the array when completely loaded.
 	-- however, if two files circularly depend on each other via mtrequire(),
 	-- an infinite recursion will occur.
@@ -203,6 +206,10 @@ local getcomponent_nocopy = function(self, pathstring)
 	-- else we need to go out to a file.
 	-- mark this path as in-flight to catch circular errors.
 	loadstate.inflight[pathstring] = true
+	-- we may be currently loading another component up a dependency chain,
+	-- so we must save any previous current loadstate to avoid clobbering.
+	local oc = loadstate.current
+	local oct = loadstate.current_type
 	loadstate.current = pathstring
 	loadstate.current_type = pathresult.type
 
@@ -211,8 +218,8 @@ local getcomponent_nocopy = function(self, pathstring)
 
 	-- clean up at the end.
 	loadstate.inflight[pathstring] = nil
-	loadstate.current = nil
-	loadstate.current_type = nil
+	loadstate.current = oc
+	loadstate.current_type = oct
 
 	-- throw any error if not success;
 	-- else insert object into cache and return component to caller
@@ -220,6 +227,7 @@ local getcomponent_nocopy = function(self, pathstring)
 		caches[pathstring] = result
 		return result
 	else
+		--print("# re-throwing error now, offending component was "..pathstring)
 		error(result)
 	end
 end
