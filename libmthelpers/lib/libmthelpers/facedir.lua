@@ -152,4 +152,27 @@ end
 
 
 
+-- get an array of rotation vectors indexed by param2 rotation bits,
+-- by taking an initial base vector for when the node is at param2 = 0,
+-- and applying the rotation function for all possible param2 values.
+-- returns a function of param2 which will in turn return the appropriate vector.
+-- label is just used for error messages (not in the below type signature)
+-- mk_rotated_vector_set :: Vec3 -> (NodeParam2 -> Vec3)
+local rotfuncs = optimised_rotations.funcs
+local deflabel = "mk_rotated_vector_set() closure"
+local mk_rotated_vector_set = function(basevec, label)
+	label = label or deflabel
+	local rotations = {}
+	for i = 0, 23, 1 do
+		rotations[i] = rotfuncs[i](basevec)
+	end
+	return function(param2)
+		param2check(label, param2)
+		return rotations[param2]
+	end
+end
+facedir.mk_rotated_vector_set = mk_rotated_vector_set
+
+
+
 return facedir
