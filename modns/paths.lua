@@ -57,7 +57,7 @@ enum_pathtype.uri = {
 -- we can't specify * on () in lua patterns.
 -- and we can't have any external deps when *we are* the dependency loader.
 -- instead, use a simpler initial test and validate more closely by splitting and checking the package levels.
-local javamatch = "^[a-z][a-zA-Z0-9_.]*$"
+local javamatch = "^[a-zA-Z][a-zA-Z0-9_.]*$"
 interface.patterns.javamatch = javamatch
 local java_handler = function(path)
 	local tokens = strutil.split(path, ".", true)
@@ -65,7 +65,7 @@ local java_handler = function(path)
 	for _, token in ipairs(tokens) do
 		if #token == 0 then return nil end
 		-- note absence of dot separator
-		if token:find("^[a-z][a-zA-Z0-9_]*$") == nil then return nil end
+		if token:find("^[a-zA-Z][a-zA-Z0-9_]*$") == nil then return nil end
 	end
 	return tokens
 end
