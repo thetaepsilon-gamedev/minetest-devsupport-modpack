@@ -17,6 +17,7 @@ local components = {
 	"testing",
 	"strutil",
 	"ioformats",
+	"io",
 }
 
 
