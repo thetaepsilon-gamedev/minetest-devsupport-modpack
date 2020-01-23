@@ -77,6 +77,15 @@ local center_on_node = function(v)
 end
 coords.round_to_node = center_on_node
 
+-- mutating version if you're *absolutely sure* the original table isn't going to be used again...
+coords.round_to_node_mut = function(v)
+	local rx, ry, rz = center_on_node_raw(v.x, v.y, v.z)
+	v.x = rx
+	v.y = ry
+	v.z = rz
+	return v
+end
+
 
 
 -- identify which world chunk a given arbitary position is in.
