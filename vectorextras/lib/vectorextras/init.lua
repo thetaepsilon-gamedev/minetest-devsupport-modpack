@@ -8,6 +8,7 @@ local components = {
 	"scalar_multiply",
 	"dotproduct",
 	"reflect",
+	"unit",
 }
 
 
