@@ -2,7 +2,7 @@
 -- returns -1 if v < 0, 0 if v == 0, and 1 if v > 0.
 -- does not preserve signed zero.
 -- NaNs are propagated.
-math.sign = function(v)
+local sign = function(v)
 	if (v < 0) then
 		return -1
 	else
@@ -16,3 +16,16 @@ math.sign = function(v)
 		end
 	end
 end
+math.sign = sign
+
+-- "signed" version of math.pow that only operates on the absolute value of x,
+-- then reapplies the sign afterwards.
+local pow = assert(math.pow)
+local abs = assert(math.abs)
+math.signpow = function(x, e)
+	local magnitude = abs(x)
+	local s = sign(x)
+	local raised = pow(magnitude, e)
+	return raised * s
+end
+
